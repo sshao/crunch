@@ -8,7 +8,7 @@ gem 'sqlite3'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.3'
 # Use HAML for templates
-gem 'haml'
+gem 'haml-rails'
 # Use Foundation for frontend
 gem 'foundation-rails'
 # Use Uglifier as compressor for JavaScript assets
@@ -19,8 +19,10 @@ gem 'coffee-rails', '~> 4.0.0'
 # gem 'therubyracer',  platforms: :ruby
 
 gem 'tumblr_client'
+gem 'rmagick', '2.13.2'
 
 group :test do
+  gem 'factory_girl_rails', '~> 4.0'
   gem 'rspec-rails', '~> 3.0.0'
   gem 'webmock'
   gem 'pry'
