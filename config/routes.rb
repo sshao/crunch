@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  root 'histogram#index'
+  root 'histograms#index'
   # FIXME shouldn't really do this... i don't have edit/update/destroy
   resources :histograms
 
