@@ -14,7 +14,7 @@ FactoryGirl.define do
   end
 
   factory :invalid_histogram, parent: :histogram do
-    username    nil
+    username    "idontexist"
   end
 end
 

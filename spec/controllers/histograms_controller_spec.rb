@@ -1,11 +1,21 @@
 require 'rails_helper'
+require_relative '../helpers'
 
 describe HistogramsController do
+  RSpec.configure do |c|
+    c.include Helpers
+  end
+
+  before(:each) do
+    username = FactoryGirl.attributes_for(:histogram)[:username]
+    stub_info_request(username)
+  end
+
   describe "GET index" do
     it "assigns @histograms" do
       histogram = FactoryGirl.create(:histogram)
       get :index
-      expect(assigns(:histograms)).to eq histogram
+      expect(assigns(:histograms)).to eq [histogram]
     end
     
     it "renders the index template" do
@@ -49,6 +59,10 @@ describe HistogramsController do
     end
 
     context "with invalid attributes" do
+      before(:each) do
+        stub_info_request_undefined_user(FactoryGirl.attributes_for(:invalid_histogram)[:username])
+      end
+
       it "does not save the new histogram" do
         expect {
           post :create, histogram: FactoryGirl.attributes_for(:invalid_histogram)
@@ -62,3 +76,4 @@ describe HistogramsController do
     end
   end
 end
+
