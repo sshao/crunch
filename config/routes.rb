@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  root 'histogram#index'
+  # FIXME shouldn't really do this... i don't have edit/update/destroy
+  resources :histograms
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
