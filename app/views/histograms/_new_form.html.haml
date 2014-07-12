@@ -1,0 +1,4 @@
+= form_tag "/histograms", :method => "post" do
+  %label{for: "username"} username:
+  %input#username{name: "histogram[username]"}
+  %button{type: "submit"} Generate
