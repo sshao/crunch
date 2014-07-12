@@ -1,6 +1,7 @@
 FactoryGirl.define do
   factory :histogram do 
     username      "arrow"
+    # FIXME source_ts should also be computed... as should dataset_size
     source_ts     1404670749
     dataset_size  5
   end

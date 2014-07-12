@@ -1,6 +1,8 @@
 module Helpers
+  TEST_PULL_LIMIT = 3
+
   def photo_uri(username)
-    %r{api.tumblr.com/v2/blog/#{username}.tumblr.com/posts/photo}
+    %r{api.tumblr.com/v2/blog/#{username}.tumblr.com/posts/photo\?.*&limit=#{PULL_LIMIT}}
   end
 
   def info_uri(username)
