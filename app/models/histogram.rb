@@ -4,6 +4,8 @@ class Histogram < ActiveRecord::Base
   validate  :username_exists
   before_create :update_histogram
 
+  COLOR_DIFF_THRESHOLD = 13
+
   def username_exists
     client = Tumblr::Client.new
     response = client.blog_info("#{username}.tumblr.com")
@@ -18,6 +20,7 @@ class Histogram < ActiveRecord::Base
     if response["status"].nil?
       self.offset += response["posts"].size
       generate_histogram(response["posts"])
+      self.histogram = crunch(self.histogram)
     else
       errors.add(:username, "there was a problem connecting to #{username}, received status code #{response["status"]}")
       return false
@@ -45,7 +48,7 @@ class Histogram < ActiveRecord::Base
       full_histogram = full_histogram.merge(histo) { |k, v1, v2| v1 + v2 }
     end
 
-    self.histogram = crunch(full_histogram)
+    self.histogram = full_histogram
   end
 
   def photo_url(post)
@@ -63,28 +66,24 @@ class Histogram < ActiveRecord::Base
   end
 
   def crunch(colors)
-    new_hash = {}
-    colors.each_with_index do |hash, index|
-      color = hash[0]
-      value = hash[1].to_i
+    return colors if colors.nil? || colors.size <= 1
 
-      if index == 0
-        new_hash[color] = value
-      else
-        
-        found = false
-        new_hash.each do |existing_color, existing_value|
-          if color_diff(color, existing_color) < 7
-            new_hash[existing_color] += value
-            found = true
-            break
-          end
-        end
+    target_color = colors.keys.first
+    results = colors.group_by { |color, _| color_diff(target_color, color) < COLOR_DIFF_THRESHOLD }
 
-        new_hash[color] = value if !found
-      end
-    end     
-    new_hash
+    remainder = Hash[results[false]] unless results[false].nil?
+    merge_hashes(crunch_hash(Hash[results[true]]), crunch(remainder))
+  end
+
+  def crunch_hash(hash)
+    { hash.max_by { |_, v| v }.first => hash.map { |_, v| v }.sum }
+  end
+
+  def merge_hashes(hash1, hash2)
+    return hash1 if hash2.nil?
+    return hash2 if hash1.nil?
+
+    hash1.merge(hash2) { |_, v1, v2| v1 + v2 }
   end
   
   def color_diff(color1, color2)
