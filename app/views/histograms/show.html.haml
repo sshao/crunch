@@ -10,4 +10,4 @@
 
 = hidden_field_tag "chart_data", @histogram.histogram.to_json, { :id => "chart-data" }
   
-.chart
+%svg{class: "chart", style: "background: #eee;"}
