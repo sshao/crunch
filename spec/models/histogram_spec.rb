@@ -7,30 +7,38 @@ describe Histogram do
   end
 
   describe "#new" do
-    let(:username) { FactoryGirl.attributes_for(:histogram)[:username] }
 
-    it "is invalid without a username" do
-      stub_info_request_undefined_user(nil)
-      expect(FactoryGirl.build(:histogram, username: nil)).to_not be_valid
+    context "with invalid parameters" do
+      it "is invalid without a username" do
+        stub_info_request_undefined_user(nil)
+        expect(FactoryGirl.build(:histogram, username: nil)).to_not be_valid
+      end
+
+      it "is invalid when there is no tumblr associated with its username" do
+        stub_info_request_undefined_user(FactoryGirl.attributes_for(:invalid_histogram)[:username])
+        expect(FactoryGirl.build(:invalid_histogram)).to_not be_valid
+      end
     end
 
-    it "is invalid when there is no tumblr associated with its username" do
-      stub_info_request_undefined_user(FactoryGirl.attributes_for(:invalid_histogram)[:username])
-      expect(FactoryGirl.build(:invalid_histogram)).to_not be_valid
-    end
+    context "with valid parameters" do
+      before :each do 
+        username = FactoryGirl.attributes_for(:histogram)[:username]
+        stub_info_request(username)
+        stub_photo_request(username)
+      end
 
-    it "populates a histogram" do
-      stub_info_request(username)
-      stub_photo_request(username)
+      it "assigns the correct username" do
+        username = FactoryGirl.attributes_for(:histogram)[:username]
+        expect(FactoryGirl.create(:histogram).username).to eq username
+      end
 
-      expect(FactoryGirl.create(:histogram).histogram).to_not be_empty
-    end
+      it "populates a histogram" do
+        expect(FactoryGirl.create(:histogram).histogram).to_not be_empty
+      end
 
-    it "assigns correct data sample size" do
-      stub_info_request(username)
-      stub_photo_request(username)
-
-      expect(FactoryGirl.create(:histogram).data_size).to be Helpers::TEST_PULL_LIMIT
+      it "assigns correct data sample size" do
+        expect(FactoryGirl.create(:histogram).data_size).to be Helpers::TEST_PULL_LIMIT
+      end
     end
   end
 

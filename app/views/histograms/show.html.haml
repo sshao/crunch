@@ -1,4 +1,6 @@
-%h1 Histograms#show
+%h2 
+  %a{href: "http://#{@histogram.username}.tumblr.com"} 
+    = "#{@histogram.username}@tumblr"
 %p Sample size: #{@histogram.data_size} posts
 
 = form_tag "/histograms/#{@histogram.id}/pull", :method => "post" do
