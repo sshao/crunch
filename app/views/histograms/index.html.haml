@@ -1,4 +1,9 @@
-%h1 Histograms#index
-%p Find me in app/views/histograms/index.html.haml
-
+%h2 Generate
 = render :partial => 'new_form'
+
+%h2 Browse
+%ul
+  - @histograms.each do |histogram|
+    %li 
+      %a{href: histogram_path(histogram)} 
+        = histogram.username
