@@ -7,6 +7,8 @@ describe Histogram do
   end
 
   describe "#new" do
+    let(:username) { FactoryGirl.attributes_for(:histogram)[:username] }
+
     it "is invalid without a username" do
       stub_info_request_undefined_user(nil)
       expect(FactoryGirl.build(:histogram, username: nil)).to_not be_valid
@@ -18,11 +20,17 @@ describe Histogram do
     end
 
     it "populates a histogram" do
-      username = FactoryGirl.attributes_for(:histogram)[:username]
       stub_info_request(username)
       stub_photo_request(username)
 
       expect(FactoryGirl.create(:histogram).histogram).to_not be_empty
+    end
+
+    it "assigns correct data sample size" do
+      stub_info_request(username)
+      stub_photo_request(username)
+
+      expect(FactoryGirl.create(:histogram).data_size).to be Helpers::TEST_PULL_LIMIT
     end
   end
 

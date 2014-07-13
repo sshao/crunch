@@ -1,12 +1,8 @@
 %h1 Histograms#show
-%p Find me in app/views/histograms/show.html.haml
+%p Sample size: #{@histogram.data_size} posts
 
 = form_tag "/histograms/#{@histogram.id}/pull", :method => "post" do
   %button{type: "submit"} Update
-
--#
-  - @histogram.histogram.sort_by{|_k,v| v}.each do |key, value|
-    .div{style: "height: 5px; width: #{value/100}px; background: #{key};"}
 
 = hidden_field_tag "chart_data", @histogram.histogram.to_json, { :id => "chart-data" }
   

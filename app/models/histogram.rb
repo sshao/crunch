@@ -4,6 +4,8 @@ class Histogram < ActiveRecord::Base
   validate  :username_exists
   before_create :update_histogram
 
+  alias_attribute :data_size, :offset
+
   COLOR_DIFF_THRESHOLD = 13
 
   def username_exists
@@ -19,6 +21,7 @@ class Histogram < ActiveRecord::Base
     response = client.posts("#{username}.tumblr.com", :type => "photo", :limit => PULL_LIMIT, :offset => offset)
     if response["status"].nil?
       self.offset += response["posts"].size
+
       generate_histogram(response["posts"])
       self.histogram = crunch(self.histogram)
     else
