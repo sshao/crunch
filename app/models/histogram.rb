@@ -45,7 +45,7 @@ class Histogram < ActiveRecord::Base
       full_histogram = full_histogram.merge(histo) { |k, v1, v2| v1 + v2 }
     end
 
-    self.histogram = full_histogram
+    self.histogram = crunch(full_histogram)
   end
 
   def photo_url(post)
@@ -60,5 +60,37 @@ class Histogram < ActiveRecord::Base
   rescue Magick::ImageMagickError => e
     logger.error e.inspect
     return nil
+  end
+
+  def crunch(colors)
+    new_hash = {}
+    colors.each_with_index do |hash, index|
+      color = hash[0]
+      value = hash[1].to_i
+
+      if index == 0
+        new_hash[color] = value
+      else
+        
+        found = false
+        new_hash.each do |existing_color, existing_value|
+          if color_diff(color, existing_color) < 7
+            new_hash[existing_color] += value
+            found = true
+            break
+          end
+        end
+
+        new_hash[color] = value if !found
+      end
+    end     
+    new_hash
+  end
+  
+  def color_diff(color1, color2)
+    rgb_color1 = ::Color::RGB.from_html(color1)
+    rgb_color2 = ::Color::RGB.from_html(color2)
+
+    rgb_color1.delta_e94(rgb_color1.to_lab, rgb_color2.to_lab)
   end
 end
