@@ -4,18 +4,19 @@ spliced_data = []
 width = 900
 height = 500
 
+y = d3.scale.linear()
+  .range([0, height])
+
 $ ->
   draw_chart(data)
 
 draw_chart = (data) ->
-  y = d3.scale.linear()
-    .domain([0, d3.max(data.values())])
-    .range([0, height])
-
   data_array = data.entries()
   data_array.sort((a, b) ->
     return a.value - b.value
   )
+
+  y.domain(d3.extent(data.values()))
 
   chart = d3.select(".chart")
     .attr("width", width)
@@ -47,6 +48,8 @@ draw_chart = (data) ->
 
 redraw_chart = () ->
   chart = d3.select(".chart")
+  
+  y.domain(d3.extent(data.values()))
 
   data_array = data.entries()
   data_array.sort((a, b) ->
@@ -59,10 +62,27 @@ redraw_chart = () ->
     )
   
   barWidth = width / data_array.length
-  
-  y = d3.scale.linear()
-    .domain([0, d3.max(data.values())])
-    .range([0, height])
+
+  bar.enter().append("g")
+    .attr("transform", (d, i) -> 
+      return "translate(" + i * barWidth + ",0)"
+    )
+    .append("rect")
+    .attr("height", (d) ->
+      console.log("HERE")
+      console.log(d)
+      return y(d.value)
+    )
+    .attr("y", (d) ->
+      return height - y(d.value)
+    )
+    .attr("width", barWidth - 1)
+    .attr("fill", (d) ->
+      return d.key
+    )
+    .on("click", (d) ->
+      removeBar(d)
+    )
 
   bar.transition()
     .duration(1000)
@@ -86,3 +106,9 @@ removeBar = (d) ->
   data.remove(d.key)
   redraw_chart()
 
+$('#reset').click( (event) ->
+  data.set(d.key, d.value) for d in spliced_data
+  spliced_data = []
+  redraw_chart()
+  event.preventDefault()
+)

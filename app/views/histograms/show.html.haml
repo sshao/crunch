@@ -4,7 +4,9 @@
 %p Sample size: #{@histogram.data_size} posts
 
 = form_tag "/histograms/#{@histogram.id}/pull", :method => "post" do
-  %button{type: "submit"} Update
+  %button{type: "submit", class: "button tiny round"} Update
+
+%a{href: "#", id: "reset", class: "button tiny round"} Reset
 
 = hidden_field_tag "chart_data", @histogram.histogram.to_json, { :id => "chart-data" }
   
