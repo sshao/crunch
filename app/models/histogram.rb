@@ -8,17 +8,21 @@ class Histogram < ActiveRecord::Base
 
   COLOR_DIFF_THRESHOLD = 13
 
+  def tumblr_url
+    "#{username}.tumblr.com"
+  end
+
   def username_exists
-    client = Tumblr::Client.new
-    response = client.blog_info("#{username}.tumblr.com")
+    @client ||= Tumblr::Client.new
+    response = @client.blog_info(tumblr_url)
     if response["status"] == 404
       errors.add(:username, "not found")
     end
   end
-
+  
   def update_histogram 
-    client = Tumblr::Client.new
-    response = client.posts("#{username}.tumblr.com", :type => "photo", :limit => PULL_LIMIT, :offset => offset)
+    @client ||= Tumblr::Client.new
+    response = @client.posts(tumblr_url, type: "photo", limit: PULL_LIMIT, offset: offset)
     if response["status"].nil?
       self.offset += response["posts"].size
 
