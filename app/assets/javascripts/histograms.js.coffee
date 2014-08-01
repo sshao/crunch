@@ -1,7 +1,7 @@
 data = d3.map(JSON.parse($("#chart-data").val()))
 spliced_data = []
 
-width = 900
+width = $(".chart-container").width()
 height = 500
 
 y = d3.scale.linear()

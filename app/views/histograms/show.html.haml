@@ -1,13 +1,15 @@
-%h2 
-  %a{href: "http://#{@histogram.username}.tumblr.com"} 
-    = "#{@histogram.username}@tumblr"
-%p Sample size: #{@histogram.data_size} posts
+.row
+  .small-3.columns
+    %h2 
+      = link_to @histogram.username, tumblr_url(@histogram)
+    %p Sample size: #{@histogram.data_size} posts
 
-= form_tag "/histograms/#{@histogram.id}/pull", :method => "post" do
-  %button{type: "submit", class: "button tiny round"} Update
+    = form_tag "/histograms/#{@histogram.id}/pull", :method => "post" do
+      %button{type: "submit", class: "button tiny round"} Update
+    
+    %a{href: "#", id: "reset", class: "button tiny round"} Reset
 
-%a{href: "#", id: "reset", class: "button tiny round"} Reset
-
-= hidden_field_tag "chart_data", @histogram.histogram.to_json, { :id => "chart-data" }
-  
-%svg{class: "chart", style: "background: #eee;"}
+  .small-9.columns.chart-container
+    = hidden_field_tag "chart_data", @histogram.histogram.to_json, { :id => "chart-data" }
+      
+    %svg{class: "chart", style: "background: #eee;"}
