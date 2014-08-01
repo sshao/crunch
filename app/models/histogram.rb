@@ -1,25 +1,29 @@
 class Histogram < ActiveRecord::Base
   serialize :histogram, Hash
+
   validates :username, presence: true, uniqueness: true
   validate  :username_exists
+
   before_create :update_histogram
 
   alias_attribute :data_size, :offset
 
+  QUANTIZE_SIZE = 5
   COLOR_DIFF_THRESHOLD = 13
   
   def update_histogram 
     @client ||= Tumblr::Client.new
-    response = @client.posts(tumblr_url, type: "photo", limit: PULL_LIMIT, offset: offset)
-    if response["status"].nil?
-      self.offset += response["posts"].size
-
-      generate_histogram(response["posts"])
-      self.histogram = crunch(self.histogram)
-    else
+    response = @client.posts(tumblr_url, 
+                             type: "photo", 
+                             limit: PULL_LIMIT, 
+                             offset: offset)
+    if !successful?(response)
       errors.add(:username, "there was a problem connecting to #{username}, received status code #{response["status"]}")
       return false
     end
+
+    self.offset += response["posts"].size
+    generate_histogram(response["posts"])
   end
 
   private
@@ -27,12 +31,18 @@ class Histogram < ActiveRecord::Base
     "#{username}.tumblr.com"
   end
 
+  def successful?(response)
+    return response["status"].nil?
+  end
+
+  def not_found?(response)
+    return response["status"] == 404
+  end
+
   def username_exists
     @client ||= Tumblr::Client.new
     response = @client.blog_info(tumblr_url)
-    if response["status"] == 404
-      errors.add(:username, "not found")
-    end
+    errors.add(:username, "not found") if not_found?(response)
   end
   
   def generate_histogram(posts)
@@ -40,18 +50,24 @@ class Histogram < ActiveRecord::Base
 
     posts.each do |post|
       image = open_image(photo_url(post))
+
       # skip if there was a problem opening the image
       return if image.nil?
-      
-      quantized_img = image.quantize(5, Magick::RGBColorspace)
-      
-      histo = quantized_img.color_histogram
-      histo = Hash[histo.map { |k,v| [k.to_color(Magick::AllCompliance, false, 8, true), v] }]
 
-      full_histogram = full_histogram.merge(histo) { |k, v1, v2| v1 + v2 }
+      full_histogram = merge_hashes(full_histogram, quantized_histogram(image))
     end
 
-    self.histogram = full_histogram
+    self.histogram = crunch(full_histogram)
+  end
+
+  def quantized_histogram(image)
+    quantized = image.quantize(QUANTIZE_SIZE, Magick::RGBColorspace)
+    histo = quantized.color_histogram
+    histo = Hash[histo.map { |color, freq| [hex_color(color), freq] }]
+  end
+
+  def hex_color(color)
+    color.to_color(Magick::AllCompliance, false, 8, true)
   end
 
   def photo_url(post)
@@ -80,14 +96,25 @@ class Histogram < ActiveRecord::Base
     return colors if colors.nil? || colors.size <= 1
 
     target_color = colors.keys.first
-    results = colors.group_by { |color, _| color_diff(target_color, color) < COLOR_DIFF_THRESHOLD }
+    grouped, remainder = group_by_color(target_color, colors)
 
-    remainder = Hash[results[false]] unless results[false].nil?
-    merge_hashes(crunch_hash(Hash[results[true]]), crunch(remainder))
+    merge_hashes(crunch_hash(grouped), crunch(remainder))
+  end
+
+  def group_by_color(target, colors)
+    combined = colors.group_by { |color, _| color_diff(target, color) < COLOR_DIFF_THRESHOLD }
+
+    remainder = Hash[combined[false]] unless combined[false].nil?
+    grouped = Hash[combined[true]]
+    return grouped, remainder
   end
 
   def crunch_hash(hash)
-    { hash.max_by { |_, v| v }.first => hash.map { |_, v| v }.sum }
+    { most_frequent_color(hash) => hash.values.sum }
+  end
+
+  def most_frequent_color(colors)
+    colors.max_by { |_, freq| freq }.first
   end
 
   def merge_hashes(hash1, hash2)
@@ -101,6 +128,9 @@ class Histogram < ActiveRecord::Base
     rgb_color1 = ::Color::RGB.from_html(color1)
     rgb_color2 = ::Color::RGB.from_html(color2)
 
+    # Color::RGB#delta_e94 is an instance method, hence
+    # calling it thru rgb_color1
+    # defined: http://bit.ly/1puM0uD
     rgb_color1.delta_e94(rgb_color1.to_lab, rgb_color2.to_lab)
   end
 end
