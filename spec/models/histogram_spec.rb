@@ -52,6 +52,16 @@ describe Histogram do
       stub_photo_request(FactoryGirl.attributes_for(:histogram)[:username])
     end
 
+    it "crunches an array of hashes together" do
+      data1 = { "#FFFFFF" => 10 }
+      data2 = { "#FFFFFE" => 20 }
+      data3 = { "#FFFFFD" => 5 }
+      data_array = [data1, data2, data3]
+      expected = { "#FFFFFE" => 35 }
+
+      expect(histogram.send(:crunch, data_array)).to eq expected 
+    end
+
     it "combines two similar colors together" do
       data = { "#FFFFFF" => 10, "#FFFFFE" => 20 }
       expected = { "#FFFFFE" => 30 }
@@ -65,5 +75,4 @@ describe Histogram do
       expect(histogram.send(:crunch, data)).to eq expected
     end
   end
-
 end

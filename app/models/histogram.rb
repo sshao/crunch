@@ -47,6 +47,7 @@ class Histogram < ActiveRecord::Base
   
   def generate_histogram(posts)
     full_histogram = self.histogram || {}
+    histograms = [full_histogram]
 
     posts.each do |post|
       image = open_image(photo_url(post))
@@ -54,10 +55,10 @@ class Histogram < ActiveRecord::Base
       # skip if there was a problem opening the image
       return if image.nil?
 
-      full_histogram = merge_hashes(full_histogram, quantized_histogram(image))
+      histograms.push quantized_histogram(image)
     end
 
-    self.histogram = crunch(full_histogram)
+    self.histogram = crunch(histograms)
   end
 
   def quantized_histogram(image)
@@ -93,12 +94,21 @@ class Histogram < ActiveRecord::Base
   end
 
   def crunch(colors)
+    crunch_helper(array_to_hash(colors))
+  end
+
+  def crunch_helper(colors)
     return colors if colors.nil? || colors.size <= 1
 
     target_color = colors.keys.first
     grouped, remainder = group_by_color(target_color, colors)
 
-    merge_hashes(crunch_hash(grouped), crunch(remainder))
+    merge_hashes(crunch_hash(grouped), crunch_helper(remainder))
+  end
+
+  def array_to_hash(array)
+    return array if array.class == Hash
+    array.reduce({}) { |sum, cur| merge_hashes(sum, cur) }
   end
 
   def group_by_color(target, colors)
@@ -121,7 +131,7 @@ class Histogram < ActiveRecord::Base
     return hash1 if hash2.nil?
     return hash2 if hash1.nil?
 
-    hash1.merge(hash2) { |_, v1, v2| v1 + v2 }
+    hash1.update(hash2) { |_, v1, v2| v1 + v2 }
   end
   
   def color_diff(color1, color2)
@@ -134,3 +144,4 @@ class Histogram < ActiveRecord::Base
     rgb_color1.delta_e94(rgb_color1.to_lab, rgb_color2.to_lab)
   end
 end
+
