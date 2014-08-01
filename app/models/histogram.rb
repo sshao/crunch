@@ -34,11 +34,6 @@ class Histogram < ActiveRecord::Base
     end
   end
 
-  def print_and_flush(str)
-    print str
-    $stdout.flush
-  end
-
   def generate_histogram(posts)
     full_histogram = self.histogram || {}
 
