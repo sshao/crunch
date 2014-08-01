@@ -22,13 +22,16 @@ gem 'tumblr_client'
 gem 'rmagick', '2.13.2'
 gem 'color', '~> 1.7'
 
-gem 'powify', group: :development
-
 group :test do
   gem 'factory_girl_rails', '~> 4.0'
   gem 'rspec-rails', '~> 3.0.0'
   gem 'webmock'
   gem 'pry'
+end
+
+group :development do
+  gem 'powify'
+  gem 'ruby-prof'
 end
 
 # Use jquery as the JavaScript library
