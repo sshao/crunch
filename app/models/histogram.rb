@@ -7,18 +7,6 @@ class Histogram < ActiveRecord::Base
   alias_attribute :data_size, :offset
 
   COLOR_DIFF_THRESHOLD = 13
-
-  def tumblr_url
-    "#{username}.tumblr.com"
-  end
-
-  def username_exists
-    @client ||= Tumblr::Client.new
-    response = @client.blog_info(tumblr_url)
-    if response["status"] == 404
-      errors.add(:username, "not found")
-    end
-  end
   
   def update_histogram 
     @client ||= Tumblr::Client.new
@@ -34,6 +22,19 @@ class Histogram < ActiveRecord::Base
     end
   end
 
+  private
+  def tumblr_url
+    "#{username}.tumblr.com"
+  end
+
+  def username_exists
+    @client ||= Tumblr::Client.new
+    response = @client.blog_info(tumblr_url)
+    if response["status"] == 404
+      errors.add(:username, "not found")
+    end
+  end
+  
   def generate_histogram(posts)
     full_histogram = self.histogram || {}
 
@@ -56,8 +57,16 @@ class Histogram < ActiveRecord::Base
   def photo_url(post)
     # FIXME photosets?
     first_photo = post["photos"][0]
-    photo_500px = first_photo["alt_sizes"].find{ |photo| photo["width"] == 500 } || first_photo["original_size"]
-    photo_500px["url"]
+    photo = standard_photo(first_photo) || original_photo(first_photo)
+    photo["url"]
+  end
+
+  def standard_photo(photo_data)
+    photo_data["alt_sizes"].find { |photo| photo["width"] == 500 }
+  end
+
+  def original_photo(photo_data)
+    photo_data["original_size"]
   end
 
   def open_image(url)

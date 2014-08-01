@@ -55,14 +55,14 @@ describe Histogram do
     it "combines two similar colors together" do
       data = { "#FFFFFF" => 10, "#FFFFFE" => 20 }
       expected = { "#FFFFFE" => 30 }
-      expect(histogram.crunch(data)).to eq expected
+      expect(histogram.send(:crunch, data)).to eq expected
     end
 
     it "combines many similar colors together" do
       data = { "#FFFFFF" => 10, "#fa2b18" => 4, "#FFFFFE" => 20, "#f82126" => 8,
         "#f31c21" => 10, "#bbb4b8" => 1, "#c3bbc0" => 2, "#f22328" => 5}
       expected = { "#FFFFFE" => 30, "#f31c21" => 27, "#c3bbc0" => 3 }
-      expect(histogram.crunch(data)).to eq expected
+      expect(histogram.send(:crunch, data)).to eq expected
     end
   end
 
