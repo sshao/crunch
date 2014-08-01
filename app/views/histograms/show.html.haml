@@ -6,8 +6,7 @@
 
     = form_tag "/histograms/#{@histogram.id}/pull", :method => "post" do
       %button{type: "submit", class: "button tiny round"} Update
-    
-    %a{href: "#", id: "reset", class: "button tiny round"} Reset
+      %a{href: "#", id: "reset", class: "button tiny round"} Reset
 
   .small-9.columns.chart-container
     = hidden_field_tag "chart_data", @histogram.histogram.to_json, { :id => "chart-data" }
