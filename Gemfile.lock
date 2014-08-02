@@ -81,6 +81,7 @@ GEM
     multi_json (1.10.1)
     multipart-post (1.2.0)
     oauth (0.4.7)
+    parallel (1.1.2)
     polyglot (0.3.5)
     powify (0.9.1)
     pry (0.10.0)
@@ -218,6 +219,7 @@ DEPENDENCIES
   haml-rails
   jbuilder (~> 2.0)
   jquery-rails
+  parallel
   powify
   pry
   rails (= 4.1.4)

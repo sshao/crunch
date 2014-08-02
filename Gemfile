@@ -22,6 +22,8 @@ gem 'tumblr_client'
 gem 'rmagick', '2.13.2'
 gem 'color', '~> 1.7'
 
+gem 'parallel'
+
 group :test do
   gem 'factory_girl_rails', '~> 4.0'
   gem 'rspec-rails', '~> 3.0.0'
