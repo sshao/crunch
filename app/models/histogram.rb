@@ -86,20 +86,26 @@ class Histogram < ActiveRecord::Base
     full_histogram = self.histogram || {}
     histograms = [full_histogram]
 
-    results = posts.map do |post|
-      image = open_image(photo_url(post))
+    threads = []
 
-      # skip if there was a problem opening the image
-      return if image.nil?
+    posts.each do |post|
+      threads << Thread.new do
+        image = open_image(photo_url(post))
 
-      hist = quantized_histogram(image)
+        # skip if there was a problem opening the image
+        return if image.nil?
 
-      image.destroy!
+        hist = quantized_histogram(image)
 
-      hist
+        image.destroy!
+
+        hist
+      end
     end
 
-    histograms.concat results
+    threads.each do |t|
+      histograms.push t.value
+    end
 
     self.histogram = crunch(histograms)
   end
