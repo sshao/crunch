@@ -32,7 +32,6 @@ group :test do
 end
 
 group :development do
-  gem 'powify'
   gem 'ruby-prof'
 end
 

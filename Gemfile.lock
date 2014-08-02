@@ -83,7 +83,6 @@ GEM
     oauth (0.4.7)
     parallel (1.1.2)
     polyglot (0.3.5)
-    powify (0.9.1)
     pry (0.10.0)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -220,7 +219,6 @@ DEPENDENCIES
   jbuilder (~> 2.0)
   jquery-rails
   parallel
-  powify
   pry
   rails (= 4.1.4)
   rmagick (= 2.13.2)
