@@ -8,6 +8,8 @@
       %button{type: "submit", class: "button tiny round"} Update
       %a{href: "#", id: "reset", class: "button tiny round"} Reset
 
+    %a{href: "#", id: "pie", class: "button tiny round"} PIE
+
   .small-9.columns.chart-container
     = hidden_field_tag "chart_data", @histogram.histogram.to_json, { :id => "chart-data" }
       
