@@ -1,0 +1,3 @@
+$("#histogram-id").text("#{@ui_feedback}");
+
+if ("#{@next_action}" != '') { $.ajax({type: 'post', url: "#{@next_action}"}); }
