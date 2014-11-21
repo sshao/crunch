@@ -11,11 +11,11 @@ class Histogram < ActiveRecord::Base
   QUANTIZE_SIZE = 5
   COLOR_DIFF_THRESHOLD = 13
   
-  def update_histogram(limit = PULL_LIMIT)
+  def update_histogram 
     @client ||= Tumblr::Client.new
     response = @client.posts(tumblr_url, 
                              type: "photo", 
-                             limit: limit, 
+                             limit: PULL_LIMIT, 
                              offset: offset)
     if !successful?(response)
       errors.add(:username, "there was a problem connecting to #{username}, received status code #{response["status"]}")

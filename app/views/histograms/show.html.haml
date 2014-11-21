@@ -4,15 +4,9 @@
       = link_to @histogram.username, tumblr_url(@histogram)
     %p Sample size: #{@histogram.data_size} posts
 
-    -#
-      = form_tag "/histograms/#{@histogram.id}/pull", :method => "post" do
-        %button{type: "submit", class: "button tiny round"} Update
-
-    #histogram-id{"histogram-id" => @histogram.id}
-    
-    %a{href: "#", id: "update", class: "button tiny round"} Update
-
-    %a{href: "#", id: "reset", class: "button tiny round"} Reset
+    = form_tag "/histograms/#{@histogram.id}/pull", :method => "post" do
+      %button{type: "submit", class: "button tiny round"} Update
+      %a{href: "#", id: "reset", class: "button tiny round"} Reset
 
     %a{href: "#", id: "pie", class: "button tiny round"} PIE
 

@@ -30,33 +30,11 @@ class HistogramsController < ApplicationController
     end
   end
 
-  def update_ui_and_perform_next(ui_feedback, next_action)
-    @ui_feedback = ui_feedback
-    @next_action = next_action
-
-    respond_to do |format|
-      format.js {render layout: false}
-    end
-  end
-
   def pull
-    loop_counter = params[:counter].to_i
-    if loop_counter <= 0
-      update_ui_and_perform_next("", nil)
-    else
-      histogram = Histogram.find(params[:id])
-      cur_offset = histogram.offset
-      histogram.update_histogram(5)
-      histogram.save
-      diff = histogram.offset - cur_offset
-
-      # no more photo posts!!
-      if diff == 0
-        update_ui_and_perform_next("no more photo posts", nil)
-      else
-        update_ui_and_perform_next("#{loop_counter} left", "#{params[:id]}/#{loop_counter - diff}/pull")
-      end
-    end
+    histogram = Histogram.find(params[:id])
+    histogram.update_histogram
+    histogram.save
+    redirect_to histogram
   end
 
   def permitted_params(params)
