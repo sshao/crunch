@@ -47,49 +47,53 @@ describe HistogramsController do
 
   describe "POST #create" do
     context "with valid attributes" do
+      let(:new_hist) { FactoryGirl.attributes_for(:histogram) }
+
       it "creates a new histogram" do
         expect {
-          post :create, histogram: FactoryGirl.attributes_for(:histogram)
+          post :create, histogram: new_hist
         }.to change(Histogram, :count).by(1)
       end
 
       it "redirects to the new histogram" do
-        post :create, histogram: FactoryGirl.attributes_for(:histogram)
+        post :create, histogram: new_hist
         expect(response).to redirect_to assigns(:histogram)
       end
 
       context "with existing username" do
         before(:each) do
-          post :create, histogram: FactoryGirl.attributes_for(:histogram)
+          post :create, histogram: new_hist
         end
 
         it "does not create a new histogram" do
           expect {
-            post :create, histogram: FactoryGirl.attributes_for(:histogram)
+            post :create, histogram: new_hist
           }.to_not change(Histogram, :count)
         end
 
         it "redirects to the existing histogram page" do
-          post :create, histogram: FactoryGirl.attributes_for(:histogram)
-          username = FactoryGirl.attributes_for(:histogram)[:username]
+          post :create, histogram: new_hist
+          username = new_hist[:username]
           expect(response).to redirect_to Histogram.find_by(username: username)
         end
       end
     end
 
     context "with invalid attributes" do
+      let(:bad_hist) { FactoryGirl.attributes_for(:invalid_histogram) }
+
       before(:each) do
-        stub_info_request_undefined_user(FactoryGirl.attributes_for(:invalid_histogram)[:username])
+        stub_info_request_undefined_user(bad_hist[:username])
       end
 
       it "does not save the new histogram" do
         expect {
-          post :create, histogram: FactoryGirl.attributes_for(:invalid_histogram)
+          post :create, histogram: bad_hist
         }.to_not change(Histogram, :count)
       end
 
       it "re-renders the new method" do
-        post :create, histogram: FactoryGirl.attributes_for(:invalid_histogram)
+        post :create, histogram: bad_hist
         expect(response).to render_template :new
       end
     end
@@ -103,15 +107,18 @@ describe HistogramsController do
     it "pulls the next #{Helpers::TEST_PULL_LIMIT*2} posts for @histogram" do
       post :pull, id: @histogram
       @histogram.reload
+
       expect(@histogram.offset).to be Helpers::TEST_PULL_LIMIT * 2
     end
 
     it "updates the histogram with new data" do
-      histogram_data = @histogram.histogram
+      original_histogram = @histogram.histogram
+
       post :pull, id: @histogram
       @histogram.reload
-      @histogram.histogram.each do |color, value|
-        expect(value).to eq (histogram_data[color] * 2)
+
+      @histogram.histogram.each do |color, size|
+        expect(size).to eq (original_histogram[color] * 2)
       end
     end
 
