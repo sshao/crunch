@@ -28,6 +28,7 @@ gem 'color', '~> 1.7'
 
 group :test do
   gem 'factory_girl_rails', '~> 4.0'
+  gem 'rspec', '~> 3.0.0'
   gem 'rspec-rails', '~> 3.0.0'
   gem 'webmock'
   gem 'pry'
