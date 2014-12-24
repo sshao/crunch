@@ -13,6 +13,9 @@
     = csrf_meta_tag
 
   %body
+    - flash.each do |k, v|
+      - Array(v).each do |msg|
+        = "#{k}: #{msg}"
     .nav.top-bar(data-topbar)
       %ul.title-area
         %li.name

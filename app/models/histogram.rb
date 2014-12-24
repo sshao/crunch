@@ -1,5 +1,5 @@
 class TumblrBlog
-  attr_reader :url
+  attr_reader :url, :response_code
 
   def initialize(username)
     @client ||= Tumblr::Client.new
@@ -12,11 +12,13 @@ class TumblrBlog
 
   def exists?
     info_response = @client.blog_info(url)
-    return info_response["status"].nil?
+    @response_code = info_response["status"]
+    return @response_code.nil?
   end
 
   def responded?
-    @latest_response["status"].nil?
+    @response_code = @latest_response["status"]
+    @response_code.nil?
   end
 
   private
@@ -29,7 +31,7 @@ class Histogram < ActiveRecord::Base
   serialize :histogram, Hash
 
   validates :username, presence: true, uniqueness: true
-  validate  :username_exists
+  validate  :connected?
 
   before_validation :assign_tumblr
   before_create :update_histogram
@@ -48,10 +50,7 @@ class Histogram < ActiveRecord::Base
     assign_tumblr
     response = @tumblr.posts(offset)
 
-    if !@tumblr.responded?
-      errors.add(:username, "there was a problem connecting to #{username}, received status code #{response["status"]}")
-      return false
-    end
+    return false if !responded?
 
     self.offset += response["posts"].size
     generate_histogram(response["posts"])
@@ -70,8 +69,17 @@ class Histogram < ActiveRecord::Base
     return response["status"] == 404
   end
 
-  def username_exists
-    errors.add(:username, "not found") unless @tumblr.exists?
+  def responded?
+    return true if @tumblr.responded?
+    errors.add(:username, "there was a problem connecting to #{username}@tumblr, \
+               received status code #{@tumblr.response_code}")
+    false
+  end
+
+  def connected?
+    return if @tumblr.exists?
+    errors.add(:username, "could not connect to #{username}@tumblr, \
+               received status code #{@tumblr.response_code}")
   end
 
   def generate_histogram(posts)

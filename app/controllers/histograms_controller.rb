@@ -11,8 +11,8 @@ class HistogramsController < ApplicationController
   end
 
   def create
-    # FIXME hack to convert epoch time to datetime ... 
-    # it's here bc i can't figure out how to get this 
+    # FIXME hack to convert epoch time to datetime ...
+    # it's here bc i can't figure out how to get this
     # into the model
     if (params[:histogram][:source_ts])
       params[:histogram][:source_ts] = DateTime.strptime(params[:histogram][:source_ts], "%s")
@@ -25,6 +25,7 @@ class HistogramsController < ApplicationController
       if Histogram.exists?(:username => params[:histogram][:username])
         redirect_to Histogram.find_by(username: params[:histogram][:username])
       else
+        flash[:error] = @histogram.errors.full_messages
         render :action => :new
       end
     end
