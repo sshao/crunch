@@ -1,23 +1,54 @@
+class TumblrBlog
+  attr_reader :url
+
+  def initialize(username)
+    @client ||= Tumblr::Client.new
+    @url = url_for(username)
+  end
+
+  def posts(offset)
+    @latest_response = @client.posts(url, type: "photo", limit: PULL_LIMIT, offset: offset)
+  end
+
+  def exists?
+    info_response = @client.blog_info(url)
+    return info_response["status"].nil?
+  end
+
+  def responded?
+    @latest_response["status"].nil?
+  end
+
+  private
+  def url_for(username)
+    "#{username}.tumblr.com"
+  end
+end
+
 class Histogram < ActiveRecord::Base
   serialize :histogram, Hash
 
   validates :username, presence: true, uniqueness: true
   validate  :username_exists
 
+  before_validation :assign_tumblr
   before_create :update_histogram
 
   alias_attribute :data_size, :offset
 
   QUANTIZE_SIZE = 5
   COLOR_DIFF_THRESHOLD = 13
-  
-  def update_histogram 
-    @client ||= Tumblr::Client.new
-    response = @client.posts(tumblr_url, 
-                             type: "photo", 
-                             limit: PULL_LIMIT, 
-                             offset: offset)
-    if !successful?(response)
+
+  def assign_tumblr
+    @tumblr ||= TumblrBlog.new(username)
+  end
+
+  def update_histogram
+    # hack because @tumblr keeps coming back nil...
+    assign_tumblr
+    response = @tumblr.posts(offset)
+
+    if !@tumblr.responded?
       errors.add(:username, "there was a problem connecting to #{username}, received status code #{response["status"]}")
       return false
     end
@@ -40,11 +71,9 @@ class Histogram < ActiveRecord::Base
   end
 
   def username_exists
-    @client ||= Tumblr::Client.new
-    response = @client.blog_info(tumblr_url)
-    errors.add(:username, "not found") if not_found?(response)
+    errors.add(:username, "not found") unless @tumblr.exists?
   end
-  
+
   def generate_histogram(posts)
     full_histogram = self.histogram || {}
     histograms = [full_histogram]
