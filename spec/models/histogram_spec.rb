@@ -9,26 +9,29 @@ describe Histogram do
   describe "#new" do
     context "with invalid parameters" do
       it "is invalid without a username" do
-        stub_info_request_undefined_user(nil)
-        expect(FactoryGirl.build(:histogram, username: nil)).to_not be_valid
+        username = nil
+        stub_info_request_undefined_user(username)
+
+        expect(FactoryGirl.build(:histogram, username: username)).to_not be_valid
       end
 
       it "is invalid when there is no tumblr associated with its username" do
-        stub_info_request_undefined_user(FactoryGirl.attributes_for(:invalid_histogram)[:username])
+        username = FactoryGirl.attributes_for(:invalid_histogram)[:username]
+        stub_info_request_undefined_user(username)
+
         expect(FactoryGirl.build(:invalid_histogram)).to_not be_valid
       end
     end
 
     context "with valid parameters" do
       before :each do
-        username = FactoryGirl.attributes_for(:histogram)[:username]
-        stub_info_request(username)
-        stub_photo_request(username)
+        @username = FactoryGirl.attributes_for(:histogram)[:username]
+        stub_info_request(@username)
+        stub_photo_request(@username)
       end
 
       it "assigns the correct username" do
-        username = FactoryGirl.attributes_for(:histogram)[:username]
-        expect(FactoryGirl.create(:histogram).username).to eq username
+        expect(FactoryGirl.create(:histogram).username).to eq @username
       end
 
       it "populates a histogram" do
@@ -41,15 +44,8 @@ describe Histogram do
     end
   end
 
-  describe "#crunch" do
-    # FIXME this is stupid and should not be required
-    let(:histogram) { FactoryGirl.create(:histogram) }
-
-    # FIXME this too obvs
-    before(:each) do
-      stub_info_request(FactoryGirl.attributes_for(:histogram)[:username])
-      stub_photo_request(FactoryGirl.attributes_for(:histogram)[:username])
-    end
+  describe "#crunch (private method)" do
+    let(:histogram) { FactoryGirl.build(:histogram) }
 
     it "crunches an array of hashes together" do
       data1 = { "#FFFFFF" => 10 }
@@ -58,12 +54,13 @@ describe Histogram do
       data_array = [data1, data2, data3]
       expected = { "#FFFFFE" => 35 }
 
-      expect(histogram.send(:crunch, data_array)).to eq expected 
+      expect(histogram.send(:crunch, data_array)).to eq expected
     end
 
     it "combines two similar colors together" do
       data = { "#FFFFFF" => 10, "#FFFFFE" => 20 }
       expected = { "#FFFFFE" => 30 }
+
       expect(histogram.send(:crunch, data)).to eq expected
     end
 
@@ -71,6 +68,7 @@ describe Histogram do
       data = { "#FFFFFF" => 10, "#fa2b18" => 4, "#FFFFFE" => 20, "#f82126" => 8,
         "#f31c21" => 10, "#bbb4b8" => 1, "#c3bbc0" => 2, "#f22328" => 5}
       expected = { "#FFFFFE" => 30, "#f31c21" => 27, "#c3bbc0" => 3 }
+
       expect(histogram.send(:crunch, data)).to eq expected
     end
   end
