@@ -3,6 +3,8 @@ source 'https://rubygems.org'
 # see https://github.com/rubinius/rubinius/issues/2810 if engine_version issues arise
 # ruby "2.1.0", :engine => "rbx", :engine_version => "2.3.0"
 
+gem 'psych'
+
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.1.4'
 # Use sqlite3 as the database for Active Record
