@@ -7,7 +7,6 @@ describe Histogram do
   end
 
   describe "#new" do
-
     context "with invalid parameters" do
       it "is invalid without a username" do
         stub_info_request_undefined_user(nil)
@@ -21,7 +20,7 @@ describe Histogram do
     end
 
     context "with valid parameters" do
-      before :each do 
+      before :each do
         username = FactoryGirl.attributes_for(:histogram)[:username]
         stub_info_request(username)
         stub_photo_request(username)
