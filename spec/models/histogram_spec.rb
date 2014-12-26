@@ -30,15 +30,15 @@ describe Histogram do
       end
 
       it "assigns the correct username" do
-        expect(FactoryGirl.create(:histogram).username).to eq @username
+        expect(FactoryGirl.build(:histogram).username).to eq @username
       end
 
       it "populates a histogram" do
-        expect(FactoryGirl.create(:histogram).histogram).to_not be_empty
+        expect(FactoryGirl.build(:histogram).histogram).to_not be_empty
       end
 
       it "assigns correct data sample size" do
-        expect(FactoryGirl.create(:histogram).data_size).to be Helpers::TEST_PULL_LIMIT
+        expect(FactoryGirl.build(:histogram).data_size).to be Helpers::TEST_PULL_LIMIT
       end
     end
   end
