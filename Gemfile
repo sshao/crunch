@@ -23,6 +23,8 @@ gem 'tumblr_client'
 gem 'rmagick', '2.13.2'
 gem 'color', '~> 1.7'
 
+gem 'rails_12factor', group: :production
+
 group :test do
   gem 'factory_girl_rails', '~> 4.0'
   gem 'rspec', '~> 3.0.0'
