@@ -4,6 +4,7 @@ source 'https://rubygems.org'
 # ruby "2.1.0", :engine => "rbx", :engine_version => "2.3.0"
 
 gem 'sinatra', require: 'sinatra/base'
+gem 'sinatra-param'
 
 gem 'tumblr_client'
 gem 'rmagick', '2.13.2', require: "RMagick"
