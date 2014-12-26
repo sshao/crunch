@@ -13,6 +13,9 @@
 
 ActiveRecord::Schema.define(version: 20140713181101) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "histograms", force: true do |t|
     t.string   "username"
     t.text     "histogram"
@@ -22,6 +25,6 @@ ActiveRecord::Schema.define(version: 20140713181101) do
     t.integer  "offset",     default: 0
   end
 
-  add_index "histograms", ["username"], name: "index_histograms_on_username", unique: true
+  add_index "histograms", ["username"], name: "index_histograms_on_username", unique: true, using: :btree
 
 end
