@@ -4,6 +4,7 @@ require_relative "tumblr_blog"
 
 module Crunch
   COLOR_DIFF_THRESHOLD = 13
+
   def crunch(colors)
     crunch_helper(array_to_hash(colors))
   end
@@ -44,7 +45,7 @@ module Crunch
 
     hash1.update(hash2) { |_, v1, v2| v1 + v2 }
   end
-  
+
   def color_diff(color1, color2)
     rgb_color1 = ::Color::RGB.from_html(color1)
     rgb_color2 = ::Color::RGB.from_html(color2)
@@ -58,13 +59,6 @@ end
 
 class Histogram
   include Crunch
-  #validates :username, presence: true, uniqueness: true
-  #validate  :connected?
-
-  #before_validation :assign_tumblr
-  #before_create :update_histogram
-
-  #alias_attribute :data_size, :offset
 
   attr_accessor :username, :data_size, :histogram
 
@@ -74,20 +68,13 @@ class Histogram
   QUANTIZE_SIZE = 5
 
   def initialize(username)
-    return false if username.nil? || username.empty?
+    raise ArgumentError, "Username is required" if username.nil? || username.empty?
     @username = username
     @data_size = 0
     @histogram = {}
     assign_tumblr
-    return false unless connected?
+    raise "Could not connect to #{username}.tumblr.com" unless connected?
     update_histogram
-  end
-
-  def valid?
-    if username.nil? || username.empty? || !connected?
-      return false
-    end
-    true
   end
 
   def assign_tumblr

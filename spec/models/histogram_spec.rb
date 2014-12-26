@@ -11,14 +11,16 @@ describe Histogram do
         username = nil
         stub_info_request_undefined_user(username)
 
-        expect(FactoryGirl.build(:histogram, username: username)).to_not be_valid
+        expect { FactoryGirl.build(:histogram, username: username) }.to raise_error
+        expect { FactoryGirl.build(:histogram, username: "") }.to raise_error
+        expect { FactoryGirl.build(:histogram, username: " ") }.to raise_error
       end
 
       it "is invalid when there is no tumblr associated with its username" do
         username = FactoryGirl.attributes_for(:invalid_histogram)[:username]
         stub_info_request_undefined_user(username)
 
-        expect(FactoryGirl.build(:invalid_histogram)).to_not be_valid
+        expect { FactoryGirl.build(:invalid_histogram) }.to raise_error
       end
     end
 
@@ -43,7 +45,7 @@ describe Histogram do
     end
   end
 
-  describe "#crunch (private method)" do
+  describe "#crunch (module method)" do
     include Crunch
 
     it "crunches an array of hashes together" do
