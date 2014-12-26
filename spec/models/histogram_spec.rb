@@ -44,7 +44,7 @@ describe Histogram do
   end
 
   describe "#crunch (private method)" do
-    let(:histogram) { FactoryGirl.build(:histogram) }
+    include Crunch
 
     it "crunches an array of hashes together" do
       data1 = { "#FFFFFF" => 10 }
@@ -53,14 +53,14 @@ describe Histogram do
       data_array = [data1, data2, data3]
       expected = { "#FFFFFE" => 35 }
 
-      expect(histogram.send(:crunch, data_array)).to eq expected
+      expect(crunch(data_array)).to eq expected
     end
 
     it "combines two similar colors together" do
       data = { "#FFFFFF" => 10, "#FFFFFE" => 20 }
       expected = { "#FFFFFE" => 30 }
 
-      expect(histogram.send(:crunch, data)).to eq expected
+      expect(crunch(data)).to eq expected
     end
 
     it "combines many similar colors together" do
@@ -68,7 +68,7 @@ describe Histogram do
         "#f31c21" => 10, "#bbb4b8" => 1, "#c3bbc0" => 2, "#f22328" => 5}
       expected = { "#FFFFFE" => 30, "#f31c21" => 27, "#c3bbc0" => 3 }
 
-      expect(histogram.send(:crunch, data)).to eq expected
+      expect(crunch(data)).to eq expected
     end
   end
 end
