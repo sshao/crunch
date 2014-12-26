@@ -20,7 +20,7 @@ gem 'uglifier', '>= 1.3.0'
 gem 'coffee-rails', '~> 4.0.0'
 
 gem 'tumblr_client'
-gem 'rmagick', '2.13.2'
+gem 'rmagick', '2.13.2', require: "RMagick"
 gem 'color', '~> 1.7'
 
 gem 'rails_12factor', group: :production
