@@ -86,7 +86,7 @@ class Histogram < ActiveRecord::Base
     full_histogram = self.histogram || {}
     histograms = [full_histogram]
 
-    results = Parallel.map(posts) do |post|
+    results = posts.map do |post|
       image = open_image(photo_url(post))
 
       # skip if there was a problem opening the image
