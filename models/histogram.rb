@@ -1,3 +1,4 @@
+require "color"
 require_relative "tumblr_blog"
 
 class Histogram
@@ -8,6 +9,8 @@ class Histogram
   #before_create :update_histogram
 
   #alias_attribute :data_size, :offset
+
+  attr_accessor :username
 
   QUANTIZE_SIZE = 5
   COLOR_DIFF_THRESHOLD = 13
@@ -140,7 +143,7 @@ class Histogram
   end
 
   def crunch_hash(hash)
-    { most_frequent_color(hash) => hash.values.sum }
+    { most_frequent_color(hash) => hash.values.inject { |sum, element| sum + element } }
   end
 
   def most_frequent_color(colors)
