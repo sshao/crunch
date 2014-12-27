@@ -3,6 +3,7 @@ require 'sinatra/param'
 require 'sinatra/assetpack'
 require 'haml'
 require 'tumblr_client'
+require "coffee_script"
 require_relative 'models/histogram'
 
 PULL_LIMIT = 10
@@ -32,7 +33,8 @@ class CrunchApp < Sinatra::Base
     ]
 
     js :application, [
-      '/js/app.js'
+      '/js/app.js',
+      '/js/histogram.js'
     ]
 
     js_compression :jsmin

@@ -10,6 +10,7 @@ gem 'sinatra-assetpack'
 gem "sass", "~> 3.4.0"
 gem "compass", "~> 1.0"
 gem 'haml'
+gem "coffee-script"
 
 gem 'tumblr_client'
 gem 'rmagick', '2.13.2', require: "RMagick"
