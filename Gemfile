@@ -5,6 +5,7 @@ source 'https://rubygems.org'
 
 gem 'sinatra', require: 'sinatra/base'
 gem 'sinatra-param'
+gem 'haml'
 
 gem 'tumblr_client'
 gem 'rmagick', '2.13.2', require: "RMagick"
@@ -13,6 +14,7 @@ gem 'color', '~> 1.7'
 gem 'rails_12factor', group: :production
 
 group :test do
+  gem 'rack-test'
   gem 'factory_girl', '~> 4.5.0'
   gem 'rspec', '~> 3.0.0'
   gem 'webmock'

@@ -18,6 +18,8 @@ GEM
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.9.1)
       faraday (>= 0.7.4, < 0.10)
+    haml (4.0.6)
+      tilt
     i18n (0.7.0)
     json (1.8.1)
     mime-types (2.4.3)
@@ -27,6 +29,8 @@ GEM
     rack (1.6.0)
     rack-protection (1.5.3)
       rack
+    rack-test (0.6.2)
+      rack (>= 1.0)
     rails_12factor (0.0.3)
       rails_serve_static_assets
       rails_stdout_logging
@@ -74,6 +78,8 @@ PLATFORMS
 DEPENDENCIES
   color (~> 1.7)
   factory_girl (~> 4.5.0)
+  haml
+  rack-test
   rails_12factor
   rmagick (= 2.13.2)
   rspec (~> 3.0.0)
