@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'sinatra/param'
+require 'sinatra/assetpack'
 require 'haml'
 require 'tumblr_client'
 require_relative 'models/histogram'
@@ -15,6 +16,28 @@ Tumblr.configure do |config|
 end
 
 class CrunchApp < Sinatra::Base
+  register Sinatra::AssetPack
+
+  assets do
+    serve "/js", from: 'js'
+    serve '/bower_components', from: 'bower_components'
+
+    js :modernizr, [
+      '/bower_components/modernizr/modernizr.js',
+    ]
+
+    js :libs, [
+      '/bower_components/jquery/dist/jquery.js',
+      '/bower_components/foundation/js/foundation.js'
+    ]
+
+    js :application, [
+      '/js/app.js'
+    ]
+
+    js_compression :jsmin
+  end
+
   get "/" do
     haml :index
   end

@@ -19,3 +19,5 @@
 /tmp
 
 scratch
+.sass-cache
+public

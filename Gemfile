@@ -5,6 +5,10 @@ source 'https://rubygems.org'
 
 gem 'sinatra', require: 'sinatra/base'
 gem 'sinatra-param'
+gem 'sinatra-assetpack'
+
+gem "sass", "~> 3.4.0"
+gem "compass", "~> 1.0"
 gem 'haml'
 
 gem 'tumblr_client'
