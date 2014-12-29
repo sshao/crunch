@@ -1,11 +1,14 @@
-require_relative 'models/histogram'
-
-def tumblr_url(histogram)
-  "http://#{histogram.username}.tumblr.com"
-end
+require_relative "models/histogram"
 
 class CrunchApp < Sinatra::Base
   PULL_LIMIT = 10
+
+  helpers do
+    def tumblr_url(histogram)
+      "http://#{histogram.username}.tumblr.com"
+    end
+  end
+
   register Sinatra::AssetPack
 
   assets do
