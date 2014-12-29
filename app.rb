@@ -20,21 +20,23 @@ class CrunchApp < Sinatra::Base
   register Sinatra::AssetPack
 
   assets do
-    serve "/js", from: 'js'
-    serve '/bower_components', from: 'bower_components'
+    # Serves files from LOCALPATH in the URI path PATH.
+    # serve 'PATH', :from => 'LOCALPATH'
+    serve "/js", from: "js"
+    serve "/bower_components", from: "bower_components"
 
     js :modernizr, [
-      '/bower_components/modernizr/modernizr.js',
+      "/bower_components/modernizr/modernizr.js",
     ]
 
     js :libs, [
-      '/bower_components/jquery/dist/jquery.js',
-      '/bower_components/foundation/js/foundation.js'
+      "/bower_components/jquery/dist/jquery.js",
+      "/bower_components/foundation/js/foundation.js"
     ]
 
     js :application, [
-      '/js/app.js',
-      '/js/histogram.js'
+      "/js/app.js",
+      "/js/histogram.js"
     ]
 
     js_compression :jsmin
