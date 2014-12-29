@@ -39,7 +39,7 @@ class CrunchApp < Sinatra::Base
     ]
 
     css_compression :simple
-    js_compression :jsmin
+    js_compression :uglify
   end
 
   get "/" do

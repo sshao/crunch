@@ -30,7 +30,7 @@ draw_pie = (data) ->
     .attr("height", height)
     .append("svg:g")
     .attr("transform", "translate(" + r + "," + r + ")")
-  
+
   pie = d3.layout.pie()
     .value((d) ->
       return d.value
