@@ -17,7 +17,7 @@ class CrunchApp < Sinatra::Base
     # Serves files from LOCALPATH in the URI path PATH.
     # serve 'PATH', :from => 'LOCALPATH'
     serve "/js", from: "js"
-    serve "/stylesheets", from: "css"
+    serve "/css", from: "css"
     serve "/bower_components", from: "bower_components"
 
     css :app, [
