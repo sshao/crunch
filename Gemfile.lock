@@ -74,7 +74,7 @@ GEM
       rspec-support (~> 3.0.0)
     rspec-support (3.0.4)
     safe_yaml (1.0.4)
-    sass (3.4.9)
+    sass (3.3.14)
     simple_oauth (0.3.0)
     sinatra (1.4.5)
       rack (~> 1.4)
@@ -115,9 +115,9 @@ DEPENDENCIES
   rails_12factor
   rmagick (= 2.13.2)
   rspec (~> 3.0.0)
-  sass (~> 3.4.0)
+  sass (~> 3.3.0)
   sinatra
-  sinatra-assetpack
+  sinatra-assetpack (= 0.3.3)
   sinatra-param
   tumblr_client
   webmock
