@@ -17,10 +17,15 @@ class CrunchApp < Sinatra::Base
     # Serves files from LOCALPATH in the URI path PATH.
     # serve 'PATH', :from => 'LOCALPATH'
     serve "/js", from: "js"
+    serve "/stylesheets", from: "css"
     serve "/bower_components", from: "bower_components"
 
+    css :app, [
+      "/css/app.css"
+    ]
+
     js :modernizr, [
-      "/bower_components/modernizr/modernizr.js",
+      "/bower_components/modernizr/modernizr.js"
     ]
 
     js :libs, [
@@ -33,6 +38,7 @@ class CrunchApp < Sinatra::Base
       "/js/histogram.js"
     ]
 
+    css_compression :simple
     js_compression :jsmin
   end
 
