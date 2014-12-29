@@ -1,5 +1,3 @@
-require "color"
-require "rmagick"
 require_relative "tumblr_blog"
 
 module Crunch

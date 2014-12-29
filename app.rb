@@ -1,9 +1,3 @@
-require 'sinatra'
-require 'sinatra/param'
-require 'sinatra/assetpack'
-require 'haml'
-require 'tumblr_client'
-require "coffee_script"
 require_relative 'models/histogram'
 
 PULL_LIMIT = 10

@@ -1,5 +1,3 @@
-require "tumblr_client"
-
 class TumblrBlog
   attr_reader :url, :response_code
 
