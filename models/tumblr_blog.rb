@@ -7,8 +7,11 @@ class TumblrBlog
   end
 
   def posts(offset)
-    @latest_response = @client.posts(url, type: "photo", limit: PULL_LIMIT,
-                                     offset: offset, before_id: @latest_id)
+    @latest_response = @client.posts(url,
+                                     type: "photo",
+                                     limit: CrunchApp::PULL_LIMIT,
+                                     offset: offset,
+                                     before_id: @latest_id)
     @latest_id = @latest_response["posts"].last["id"]
     @latest_response
   end

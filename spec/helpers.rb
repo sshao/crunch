@@ -7,7 +7,7 @@ module Helpers
   end
 
   def photo_uri(username)
-    %r{#{api_uri_for(username)}/posts/photo\?.*&limit=#{PULL_LIMIT}}
+    %r{#{api_uri_for(username)}/posts/photo\?.*&limit=#{CrunchApp::PULL_LIMIT}}
   end
 
   def info_uri(username)

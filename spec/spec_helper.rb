@@ -1,3 +1,5 @@
+Bundler.require
+
 require "factory_girl"
 require "webmock/rspec"
 require "rack/test"

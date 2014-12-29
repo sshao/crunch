@@ -1,16 +1,11 @@
 require_relative 'models/histogram'
 
-PULL_LIMIT = 10
-
 def tumblr_url(histogram)
   "http://#{histogram.username}.tumblr.com"
 end
 
-Tumblr.configure do |config|
-  config.consumer_key = ENV["OAUTH_CONSUMER"]
-end
-
 class CrunchApp < Sinatra::Base
+  PULL_LIMIT = 10
   register Sinatra::AssetPack
 
   assets do
@@ -40,6 +35,10 @@ class CrunchApp < Sinatra::Base
 
     css_compression :simple
     js_compression :uglify
+  end
+
+  Tumblr.configure do |config|
+    config.consumer_key = ENV["OAUTH_CONSUMER"]
   end
 
   get "/" do
