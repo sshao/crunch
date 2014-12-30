@@ -58,7 +58,7 @@ end
 class Histogram
   include Crunch
 
-  attr_accessor :username, :offset, :histogram
+  attr_accessor :username, :offset, :histogram, :posts
 
   alias :data_size :offset
   alias :data_size= :offset=
@@ -72,16 +72,15 @@ class Histogram
     @offset = 0
     @tumblr = TumblrBlog.new(username)
     raise "Could not connect to #{username}.tumblr.com" unless connected?
-    update_histogram
   end
 
   def update_histogram
     response = @tumblr.posts(offset)
-
     return false if !responded?
 
-    @offset += response["posts"].size
-    generate_histogram(response["posts"])
+    @posts = response["posts"]
+
+    @offset += @posts.size
   end
 
   private
@@ -99,6 +98,7 @@ class Histogram
     false
   end
 
+  # this may be dead code; see crunchapp#work
   def generate_histogram(posts)
     new_hists = posts.map { |post| process(post) }
     @histogram = crunch([@histogram].concat new_hists)
