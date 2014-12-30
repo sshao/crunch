@@ -88,9 +88,9 @@ class CrunchApp < Sinatra::Base
     histogram.update_histogram
 
     new_hists = histogram.posts.map.with_index do |post, index|
-      p = histogram.send(:process, post)
+      hist = histogram.send(:process, post)
       set(index)
-      p
+      hist
     end
 
     set("")
