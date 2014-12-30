@@ -7,6 +7,9 @@ gem 'sinatra', require: 'sinatra/base'
 gem 'sinatra-param'
 gem 'sinatra-assetpack', '0.3.3'
 gem "uglifier"
+gem "faye-websocket"
+gem "puma"
+gem 'redis-sinatra'
 
 gem "sass", "~> 3.3.0"
 gem "compass", "~> 1.0"
