@@ -34,14 +34,30 @@ describe Histogram do
       it "assigns the correct username" do
         expect(FactoryGirl.build(:histogram).username).to eq @username
       end
+    end
+  end
 
-      it "populates a histogram" do
-        expect(FactoryGirl.build(:histogram).histogram).to_not be_empty
-      end
+  describe "#update_histogram" do
+    let(:username) { FactoryGirl.attributes_for(:histogram)[:username] }
+    let(:histogram) { FactoryGirl.build(:histogram, username: username) }
 
-      it "assigns correct data sample size" do
-        expect(FactoryGirl.build(:histogram).data_size).to be Helpers::TEST_PULL_LIMIT
-      end
+    before :each do
+      stub_info_request(username)
+      stub_photo_request(username)
+    end
+
+    # not true in current implementation of histogram, as
+    # the population is done in CrunchApp#work instead
+    # not sure how to restructure these tests yet
+    it "populates a histogram" do
+      histogram.update_histogram
+      expect(histogram.histogram).to_not be_empty
+    end
+
+    it "assigns correct offset (data sample) size" do
+      histogram.update_histogram
+      expect(histogram.offset).to be Helpers::TEST_PULL_LIMIT
+      expect(histogram.data_size).to be Helpers::TEST_PULL_LIMIT
     end
   end
 
