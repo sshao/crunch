@@ -58,51 +58,33 @@ end
 class Histogram
   include Crunch
 
-  attr_accessor :username, :data_size, :histogram
+  attr_accessor :username, :offset, :histogram
 
-  alias :offset :data_size
-  alias :offset= :data_size=
+  alias :data_size :offset
+  alias :data_size= :offset=
 
   QUANTIZE_SIZE = 5
 
   def initialize(username)
     raise ArgumentError, "Username is required" if username.nil? || username.empty?
     @username = username
-    @data_size = 0
     @histogram = {}
-    assign_tumblr
+    @offset = 0
+    @tumblr = TumblrBlog.new(username)
     raise "Could not connect to #{username}.tumblr.com" unless connected?
     update_histogram
   end
 
-  def assign_tumblr
-    @tumblr ||= TumblrBlog.new(username)
-  end
-
   def update_histogram
-    # hack because @tumblr keeps coming back nil...
-    assign_tumblr
     response = @tumblr.posts(offset)
 
     return false if !responded?
 
-    self.offset += response["posts"].size
+    @offset += response["posts"].size
     generate_histogram(response["posts"])
   end
 
   private
-  def tumblr_url
-    "#{username}.tumblr.com"
-  end
-
-  def successful?(response)
-    return response["status"].nil?
-  end
-
-  def not_found?(response)
-    return response["status"] == 404
-  end
-
   def responded?
     return true if @tumblr.responded?
     #errors.add(:username, "there was a problem connecting to #{username}@tumblr, \
@@ -118,31 +100,21 @@ class Histogram
   end
 
   def generate_histogram(posts)
-    full_histogram = self.histogram || {}
-    histograms = [full_histogram]
+    new_hists = posts.map { |post| process(post) }
+    @histogram = crunch([@histogram].concat new_hists)
+  end
 
-    threads = []
+  def process(post)
+    image = open_image(photo_url(post))
 
-    posts.each do |post|
-      threads << Thread.new do
-        image = open_image(photo_url(post))
+    # skip if there was a problem opening the image
+    return if image.nil?
 
-        # skip if there was a problem opening the image
-        return if image.nil?
+    hist = quantized_histogram(image)
 
-        hist = quantized_histogram(image)
+    image.destroy!
 
-        image.destroy!
-
-        hist
-      end
-    end
-
-    threads.each do |t|
-      histograms.push t.value
-    end
-
-    self.histogram = crunch(histograms)
+    hist
   end
 
   def quantized_histogram(image)
@@ -163,7 +135,7 @@ class Histogram
   end
 
   def standard_photo(photo_data)
-    photo_data["alt_sizes"].find { |photo| photo["width"] == 500 }
+    photo_data["alt_sizes"].find { |photo| photo["width"] <= 500 }
   end
 
   def original_photo(photo_data)

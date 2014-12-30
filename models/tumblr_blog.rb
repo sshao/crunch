@@ -13,17 +13,17 @@ class TumblrBlog
                                      offset: offset,
                                      before_id: @latest_id)
     @latest_id = @latest_response["posts"].last["id"]
+    @response_code = @latest_response["status"]
     @latest_response
   end
 
   def exists?
     info_response = @client.blog_info(url)
-    @response_code = info_response["status"]
-    return @response_code.nil?
+    info_response["status"].nil?
   end
 
   def responded?
-    @response_code = @latest_response["status"]
+    # FIXME can respond with a bad status code
     @response_code.nil?
   end
 
