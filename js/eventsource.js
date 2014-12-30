@@ -1,20 +1,28 @@
 var source = new EventSource("/stream");
 
 source.addEventListener('message', function(e) {
-  var progress = e.data
-  if (progress.trim()) {
-    console.log(progress);
-    $(".status").text(progress);
+  if (e.origin != window.location.origin) {
+    console.log("Error: Message origin was not " + window.location.origin)
+    return;
+  }
+  else {
+    var progress = e.data
+
+    if (progress.trim()) {
+      $(".status").text(progress);
+    }
   }
 }, false);
 
 source.addEventListener('open', function(e) {
-  console.log("es open");
-  $(".status").text("es open");
+  console.log("EventSource connection opened");
 }, false);
 
 source.addEventListener('error', function(e) {
   if (e.readyState == EventSource.CLOSED) {
-    console.log("es closed");
+    console.log("Error: EventSource connection lost");
+  }
+  else {
+    console.log("Error: EventSource connection error");
   }
 }, false);
