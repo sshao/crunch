@@ -9,6 +9,7 @@
 
     != css :app
     != js :modernizr
+    != js :libs
     %script{ type: "text/javascript", src: "https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.min.js", charset: "utf-8"}
     -#= csrf_meta_tag
     -# TODO csrf
@@ -30,5 +31,4 @@
 
     = yield
 
-    != js :libs
     != js :application
