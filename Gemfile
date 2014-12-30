@@ -22,6 +22,8 @@ gem 'color', '~> 1.7'
 
 gem 'rails_12factor', group: :production
 
+gem "pry", group: :development
+
 group :test do
   gem 'rack-test'
   gem 'factory_girl', '~> 4.5.0'
