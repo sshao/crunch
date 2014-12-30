@@ -18,6 +18,5 @@
 /log/*.log
 /tmp
 
-scratch
 .sass-cache
-public
+*.rdb
