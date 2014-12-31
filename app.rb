@@ -67,7 +67,12 @@ class CrunchApp < Sinatra::Base
       es = Faye::EventSource.new(env)
 
       loop = EM.add_periodic_timer(1) do
-        es.send(settings.cache.read(session[:key]))
+        begin
+          es.send(settings.cache.read(session[:key], raw: true))
+        rescue => e
+          # FIXME actually send error to client-side eventsource
+          puts e.message
+        end
       end
 
       es.on :close do |event|
@@ -77,23 +82,21 @@ class CrunchApp < Sinatra::Base
     end
   end
 
-  def set(arg)
-    settings.cache.write(session[:key], arg)
-  end
-
   # this is pretty horrible but i'm not sure how else to do this
   # can Histogram access the redis instance? should it?
   def work(username)
+    settings.cache.delete(session[:key]) if settings.cache.exist?(session[:key])
+
     histogram = Histogram.new(username)
     histogram.update_histogram
 
     new_hists = histogram.posts.map.with_index do |post, index|
       hist = histogram.send(:process, post)
-      set(index)
+      settings.cache.increment(session[:key])
       hist
     end
 
-    set("")
+    settings.cache.delete(session[:key]) if settings.cache.exist?(session[:key])
 
     orig_hist = histogram.histogram
     histogram.histogram = histogram.send(:crunch, [orig_hist].concat(new_hists))
