@@ -9,7 +9,7 @@ source.addEventListener('message', function(e) {
     var progress = e.data
 
     if (progress.trim()) {
-      $(".status").text(progress);
+      $(".meter").css('width', (progress * 10) + '%');
     }
   }
 }, false);

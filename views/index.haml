@@ -2,9 +2,8 @@
   .small-12.columns
     %h2 Generate
     =haml :"histograms/_new_form.html"
-
 .row
-  .small-12.columns
-    .status
+  .progress
+    .meter{style: "width: 0%"}
 
 != js :eventsource
