@@ -14,11 +14,9 @@ configure :development do
 end
 
 configure :production do
+  require "redis-rack"
   uri = URI.parse(ENV["REDISCLOUD_URL"])
-
-  config.gem "redis-store", :lib => "redis-store"
-  require "redis-store"
-  config.cache_store = :redis_store, { host: uri.host, port: uri.port, password: uri.password }
+  use Rack::Session::Redis, redis_server: { host: uri.host, password: uri.password, port: uri.port }
 end
 
 require_relative "app"
