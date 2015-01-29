@@ -4,7 +4,10 @@ class CrunchApp < Sinatra::Base
   enable :sessions
   set :session_secret, ENV["SESSION_SECRET"]
 
-  register Sinatra::Cache
+  # FIXME wtf? couldn't figure out how to configure outside
+  # of this. this is horrible.
+  uri = ENV["REDISCLOUD_URL"] || nil
+  self.set :cache, Sinatra::Cache::RedisStore.new(uri)
 
   PULL_LIMIT = 10
 

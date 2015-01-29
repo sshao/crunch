@@ -14,7 +14,6 @@ configure :development do
 end
 
 configure :production do
-  require "redis-rack"
   uri = URI.parse(ENV["REDISCLOUD_URL"])
   use Rack::Session::Redis, redis_server: { host: uri.host, password: uri.password, port: uri.port }
 end
