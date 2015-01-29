@@ -10,6 +10,7 @@ gem "uglifier"
 gem "faye-websocket"
 gem "puma"
 gem 'redis-sinatra'
+gem 'redis-rack'
 
 gem "sass", "~> 3.3.0"
 gem "compass", "~> 1.0"
