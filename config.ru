@@ -13,5 +13,11 @@ configure :development do
   end
 end
 
+configure :production do
+  require 'redis'
+  uri = URI.parse(ENV["REDISCLOUD_URL"])
+  $redis = Redis.new(host: uri.host, port: uri.port, password: uri.password)
+end
+
 require_relative "app"
 run CrunchApp
