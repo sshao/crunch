@@ -14,9 +14,11 @@ configure :development do
 end
 
 configure :production do
-  require 'redis'
   uri = URI.parse(ENV["REDISCLOUD_URL"])
-  $redis = Redis.new(host: uri.host, port: uri.port, password: uri.password)
+
+  config.gem "redis-store", :lib => "redis-store"
+  require "redis-store"
+  config.cache_store = :redis_store, { host: uri.host, port: uri.port, password: uri.password }
 end
 
 require_relative "app"
