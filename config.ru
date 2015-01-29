@@ -13,10 +13,5 @@ configure :development do
   end
 end
 
-configure :production do
-  uri = URI.parse(ENV["REDISCLOUD_URL"])
-  use Rack::Session::Redis, redis_server: { host: uri.host, password: uri.password, port: uri.port }
-end
-
 require_relative "app"
 run CrunchApp
