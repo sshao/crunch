@@ -63,8 +63,6 @@ class Histogram
   alias :data_size :offset
   alias :data_size= :offset=
 
-  QUANTIZE_SIZE = 5
-
   def initialize(username)
     raise ArgumentError, "Username is required" if username.nil? || username.empty?
     @username = username
@@ -118,17 +116,21 @@ class Histogram
   end
 
   def quantized_histogram(image)
-    # executes `mogrify -resize 100x100 +antialias image.jpg`
     raw = MiniMagick::Tool::Convert.new do |convert|
-      convert << "#{image.path}[0]" # the [0] grabs the first frame of any animated gifs
+      convert << "#{image.path}[0]" # [0] grabs the 1st frame of any animated gifs
       convert.colors "5"
       convert.format "%c\n"
       convert.depth "8"
       convert << "histogram:info:"
     end
+    Hash[*parse_raw_histogram(raw)]
+  end
+
+  def parse_raw_histogram(raw)
     raw = raw.split(' ')
-    raw2= raw.select { |x| x[-1] == ":" || x[0] == "#" }.reverse.map { |x| x[-1] == ":" ? x[0..-1].to_i : x } # LOL
-    Hash[*raw2]
+    raw.select! { |x| x[-1] == ":" || x[0] == "#" } # select freqs + colors
+    raw.reverse! # reverse order from [freq1, color1, ...] to [color1, freq1, ...]
+    raw.map { |x| x[-1] == ":" ? x[0..-1].to_i : x } # convert freqs to ints
   end
 
   def photo_url(post)
