@@ -17,7 +17,7 @@ gem 'haml'
 gem "coffee-script"
 
 gem 'tumblr_client'
-gem 'rmagick', '2.13.2', require: "RMagick"
+gem 'mini_magick'
 gem 'color', '~> 1.7'
 
 gem 'rails_12factor', group: :production
