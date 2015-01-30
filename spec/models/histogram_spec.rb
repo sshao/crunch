@@ -46,12 +46,9 @@ describe Histogram do
       stub_photo_request(username)
     end
 
-    # not true in current implementation of histogram, as
-    # the population is done in CrunchApp#work instead
-    # not sure how to restructure these tests yet
-    it "populates a histogram" do
+    it "pulls #{Helpers::TEST_PULL_LIMIT} photo posts" do
       histogram.update_histogram
-      expect(histogram.histogram).to_not be_empty
+      expect(histogram.posts.size).to be Helpers::TEST_PULL_LIMIT
     end
 
     it "assigns correct offset (data sample) size" do
