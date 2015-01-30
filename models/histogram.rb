@@ -118,7 +118,15 @@ class Histogram
   end
 
   def quantized_histogram(image)
-    raw = image.run_command("convert", "#{image.path}[0]", "-colors", 5, "-format", "%c\n", "-depth", 8, "histogram:info:").split(' ')
+    # executes `mogrify -resize 100x100 +antialias image.jpg`
+    raw = MiniMagick::Tool::Convert.new do |convert|
+      convert << "#{image.path}[0]" # the [0] grabs the first frame of any animated gifs
+      convert.colors "5"
+      convert.format "%c\n"
+      convert.depth "8"
+      convert << "histogram:info:"
+    end
+    raw = raw.split(' ')
     raw2= raw.select { |x| x[-1] == ":" || x[0] == "#" }.reverse.map { |x| x[-1] == ":" ? x[0..-1].to_i : x } # LOL
     Hash[*raw2]
   end
