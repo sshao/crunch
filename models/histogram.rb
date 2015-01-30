@@ -118,13 +118,9 @@ class Histogram
   end
 
   def quantized_histogram(image)
-    quantized = image.quantize(QUANTIZE_SIZE, Magick::RGBColorspace)
-    histo = quantized.color_histogram
-    histo = Hash[histo.map { |color, freq| [hex_color(color), freq] }]
-  end
-
-  def hex_color(color)
-    color.to_color(Magick::AllCompliance, false, 8, true)
+    raw = image.run_command("convert", "#{image.path}[0]", "-colors", 5, "-format", "%c\n", "-depth", 8, "histogram:info:").split(' ')
+    raw2= raw.select { |x| x[-1] == ":" || x[0] == "#" }.reverse.map { |x| x[-1] == ":" ? x[0..-1].to_i : x } # LOL
+    Hash[*raw2]
   end
 
   def photo_url(post)
@@ -143,8 +139,8 @@ class Histogram
   end
 
   def open_image(url)
-    Magick::ImageList.new(url).cur_image
-  rescue Magick::ImageMagickError => e
+    MiniMagick::Image.open(url)
+  rescue MiniMagick::Error => e
     logger.error e.inspect
     return nil
   end
