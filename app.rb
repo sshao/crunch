@@ -9,7 +9,7 @@ class CrunchApp < Sinatra::Base
   uri = ENV["REDISCLOUD_URL"] || nil
   self.set :cache, Sinatra::Cache::RedisStore.new(uri)
 
-  PULL_LIMIT = 10
+  PULL_LIMIT = 20
 
   helpers do
     def tumblr_url(histogram)
