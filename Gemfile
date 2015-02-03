@@ -6,6 +6,7 @@ source 'https://rubygems.org'
 gem 'sinatra', require: 'sinatra/base'
 gem 'sinatra-param'
 gem 'sinatra-assetpack', '0.3.3'
+gem 'rack-flash3', require: 'rack-flash'
 gem "uglifier"
 gem "faye-websocket"
 gem "puma"
