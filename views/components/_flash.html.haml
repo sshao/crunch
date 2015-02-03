@@ -1,0 +1,6 @@
+-# flash.each |k, v| doesn't work
+- flash.keys.each do |k|
+  - Array(flash[k]).each do |msg|
+    .alert-box{"data-alert" => "", class: k}
+      = msg
+      %a{href: "#", class: "close"} &times;

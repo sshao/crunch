@@ -4,6 +4,8 @@ class CrunchApp < Sinatra::Base
   enable :sessions
   set :session_secret, ENV["SESSION_SECRET"]
 
+  use Rack::Flash
+
   # FIXME wtf? couldn't figure out how to configure outside
   # of this. this is horrible.
   uri = ENV["REDISCLOUD_URL"] || nil
