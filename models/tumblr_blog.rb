@@ -19,6 +19,8 @@ class TumblrBlog
 
   def exists?
     info_response = @client.blog_info(url)
+    # tumblr_client strips out the status response if the status is 201 | 200.
+    # https://github.com/tumblr/tumblr_client/blob/87f4488/lib/tumblr/request.rb#L43
     info_response["status"].nil?
   end
 
