@@ -1,11 +1,12 @@
 =haml :"components/_flash.html"
 
 .row
-  .small-12.columns
+  .small-6.small-centered.columns
     %h2 Generate
     =haml :"histograms/_new_form.html"
 .row
-  .progress
-    .meter{style: "width: 0%"}
+  .small-6.small-centered.columns
+    .progress
+      .meter{style: "width: 0%"}
 
 != js :eventsource

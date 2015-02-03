@@ -15,19 +15,11 @@
     -# TODO csrf
 
   %body
-    -#
-      - flash.each do |k, v|
-        - Array(v).each do |msg|
-          = "#{k}: #{msg}"
     .nav.top-bar(data-topbar)
       %ul.title-area
         %li.name
           %h1
             %a{ href: "/" } Home
-      -#
-        %section.top-bar-section
-          %ul.left
-            %li= link_to "Generate", new_histogram_path
 
     = yield
 

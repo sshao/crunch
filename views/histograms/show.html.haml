@@ -1,20 +1,18 @@
 .row
-  .small-3.columns
+  .small-12.text-center.columns
     %h2
       %a{href: tumblr_url(@histogram)}
         = @histogram.username
     %p Sample size: #{@histogram.data_size} posts
 
-    -# form_tag "/histograms/#{@histogram.id}/pull", :method => "post" do
-    %form{ method: "post" }
-      %button{type: "submit", class: "button tiny round"} Update
-      %a{href: "#", id: "reset", class: "button tiny round"} Reset
+    %a{href: "#", id: "reset", class: "button tiny round"} Reset
+    %a{href: "#", id: "pie", class: "button tiny round"} Pie
 
-    %a{href: "#", id: "pie", class: "button tiny round"} PIE
-
-  .small-9.columns.chart-container
+.row
+  .small-9.small-centered.columns.chart-container
     %input{ id: "chart-data", name: "chart_data", type: "hidden", value: @histogram.histogram.to_json }
 
     %svg{class: "chart", style: "background: #eee;"}
 
 != js :histogram
+

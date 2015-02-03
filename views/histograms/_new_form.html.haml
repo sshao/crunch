@@ -1,7 +1,7 @@
-%form{ :action => "/create", :method => "post" }
+%form{ action: "/create", method: "post" }
   .row.collapse
     .small-10.columns
-      %label{:for => "histogram[username]"}
-      %input{:type => "text", :class => "text", :name => "histogram[username]"}
+      %label{for: "histogram[username]"}
+      %input{type: "text", placeholder: "tumblr username", class: "text", name: "histogram[username]"}
     .small-2.columns.end
-      %input{:type => "submit", :value => "Generate", :class => "button postfix" }
+      %input{type: "submit", value: "Generate", class: "button postfix" }

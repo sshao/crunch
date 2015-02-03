@@ -7,7 +7,8 @@ height = 500
 y = d3.scale.linear()
   .range([0, height])
 
-r = Math.min(width, height)/2
+pie_top_padding = 10
+r = Math.min(width, height)/2 - pie_top_padding
 
 arc = d3.svg.arc()
   .outerRadius(r)
@@ -29,7 +30,7 @@ draw_pie = (data) ->
     .attr("width", width)
     .attr("height", height)
     .append("svg:g")
-    .attr("transform", "translate(" + r + "," + r + ")")
+    .attr("transform", "translate(" + 1.5*r + "," + (r+pie_top_padding) + ")")
 
   pie = d3.layout.pie()
     .value((d) ->
