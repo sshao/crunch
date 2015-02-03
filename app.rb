@@ -110,12 +110,12 @@ class CrunchApp < Sinatra::Base
   end
 
   post "/create" do
-    begin
-      histogram = Histogram.new(params[:histogram][:username])
-      # FIXME error checking on whether `username` exists, etc
+    histogram = Histogram.new(params[:histogram][:username])
+
+    if histogram.errors.empty?
       redirect to("/show?username=#{histogram.username}")
-    rescue
-      # FIXME print errors
+    else
+      flash[:alert] = histogram.errors
       redirect to("/")
     end
   end

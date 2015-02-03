@@ -58,18 +58,30 @@ end
 class Histogram
   include Crunch
 
-  attr_accessor :username, :offset, :histogram, :posts
+  attr_accessor :username, :offset, :histogram, :posts, :errors
 
   alias :data_size :offset
   alias :data_size= :offset=
 
   def initialize(username)
-    raise ArgumentError, "Username is required" if username.nil? || username.empty?
+    @errors = []
+
+    if username.nil? || username.empty? || username.strip.empty?
+      errors << "Username cannot be blank"
+      return
+    end
+
+    if !valid?(username)
+      errors << "Username <b>#{username}</b> is invalid"
+      return
+    end
+
     @username = username
     @histogram = {}
     @offset = 0
     @tumblr = TumblrBlog.new(username)
-    raise "Could not connect to #{username}.tumblr.com" unless connected?
+
+    errors << "Could not connect to <b>#{username}</b>.tumblr.com, received <b>#{@tumblr.response_code}</b>" unless connected?
   end
 
   def update_histogram
@@ -91,8 +103,6 @@ class Histogram
 
   def connected?
     return true if @tumblr.exists?
-    #errors.add(:username, "could not connect to #{username}@tumblr, \
-               #received status code #{@tumblr.response_code}")
     false
   end
 
@@ -153,6 +163,12 @@ class Histogram
   rescue MiniMagick::Error => e
     logger.error e.inspect
     return nil
+  end
+
+  def valid?(username)
+    return false if !username.ascii_only?
+    return false if !(username =~ /^[a-zA-Z0-9\-_]+$/)
+    true
   end
 end
 

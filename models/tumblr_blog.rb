@@ -21,11 +21,12 @@ class TumblrBlog
     info_response = @client.blog_info(url)
     # tumblr_client strips out the status response if the status is 201 | 200.
     # https://github.com/tumblr/tumblr_client/blob/87f4488/lib/tumblr/request.rb#L43
-    info_response["status"].nil?
+    @response_code = info_response["status"]
+    @response_code.nil?
   end
 
   def responded?
-    # FIXME can respond with a bad status code
+    # FIXME a blog can respond with a bad status code
     @response_code.nil?
   end
 
