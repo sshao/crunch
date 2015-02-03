@@ -11,16 +11,28 @@ describe Histogram do
         username = nil
         stub_info_request_undefined_user(username)
 
-        expect { FactoryGirl.build(:histogram, username: username) }.to raise_error
-        expect { FactoryGirl.build(:histogram, username: "") }.to raise_error
-        expect { FactoryGirl.build(:histogram, username: " ") }.to raise_error
+        expect(FactoryGirl.build(:histogram, username: username).errors).to_not be_empty
+
+        expect(FactoryGirl.build(:histogram, username: "").errors).to_not be_empty
+        expect(FactoryGirl.build(:histogram, username: " ").errors).to_not be_empty
+      end
+
+      it "is invalid when the username contains invalid characters" do
+        username = "test username"
+        expect(FactoryGirl.build(:histogram, username: username).errors).to_not be_empty
+
+        username = "test/username"
+        expect(FactoryGirl.build(:histogram, username: username).errors).to_not be_empty
+
+        username = "tést"
+        expect(FactoryGirl.build(:histogram, username: username).errors).to_not be_empty
       end
 
       it "is invalid when there is no tumblr associated with its username" do
         username = FactoryGirl.attributes_for(:invalid_histogram)[:username]
         stub_info_request_undefined_user(username)
 
-        expect { FactoryGirl.build(:invalid_histogram) }.to raise_error
+        expect(FactoryGirl.build(:invalid_histogram).errors).to_not be_empty
       end
     end
 
@@ -32,7 +44,10 @@ describe Histogram do
       end
 
       it "assigns the correct username" do
-        expect(FactoryGirl.build(:histogram).username).to eq @username
+        hist = FactoryGirl.build(:histogram)
+
+        expect(hist.errors).to be_empty
+        expect(hist.username).to eq @username
       end
     end
   end
