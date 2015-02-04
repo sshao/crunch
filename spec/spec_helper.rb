@@ -2,6 +2,7 @@ Bundler.require
 
 require "factory_girl"
 require "webmock/rspec"
+require "fakeredis/rspec"
 require "rack/test"
 require_relative "../app.rb"
 
