@@ -52,6 +52,25 @@ describe Histogram do
     end
   end
 
+  # FIXME i need to better abstract the histogram model + tests;
+  # right now it's a mash of histogram + tumblr models
+  describe "#process" do
+    let(:username) { FactoryGirl.attributes_for(:histogram)[:username] }
+    let(:histogram) { FactoryGirl.build(:histogram, username: username) }
+    let(:post) { {"photos" => [{"alt_sizes" => ["width" => 500, "url" => File.join(fixture_path, "images/transparent.png")]}] } }
+
+    before :each do
+      stub_info_request(username)
+    end
+
+    it "generates HTML hex codes for transparent images" do
+      colors = histogram.send(:process, post).keys
+      colors.each do |color|
+        expect { Color::RGB.from_html(color) }.to_not raise_error
+      end
+    end
+  end
+
   describe "#update_histogram" do
     let(:username) { FactoryGirl.attributes_for(:histogram)[:username] }
     let(:histogram) { FactoryGirl.build(:histogram, username: username) }
