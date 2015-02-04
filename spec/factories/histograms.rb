@@ -1,12 +1,9 @@
 FactoryGirl.define do
   factory :histogram do
-    username      "arrow"
+    # FIXME
+    #image File.join(fixture_path, "images/yhtss.gif").to_s
 
-    initialize_with { Histogram.new(username) }
-  end
-
-  factory :invalid_histogram, parent: :histogram do
-    username    "idontexist"
+    initialize_with { Histogram.new(image) }
   end
 end
 
