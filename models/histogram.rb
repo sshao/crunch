@@ -131,6 +131,9 @@ class Histogram
       convert.colors "5"
       convert.format "%c\n"
       convert.depth "8"
+      convert.background "white"
+      convert.alpha "remove"
+      convert.alpha "off"
       convert << "histogram:info:"
     end
     Hash[*parse_raw_histogram(raw)]
