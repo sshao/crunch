@@ -1,4 +1,5 @@
 require_relative "models/histogram"
+require_relative "models/crunch"
 
 class CrunchApp < Sinatra::Base
   enable :sessions
@@ -14,8 +15,8 @@ class CrunchApp < Sinatra::Base
   PULL_LIMIT = 20
 
   helpers do
-    def tumblr_url(histogram)
-      "http://#{histogram.username}.tumblr.com"
+    def tumblr_url(username)
+      "http://#{username}.tumblr.com"
     end
   end
 
@@ -89,39 +90,39 @@ class CrunchApp < Sinatra::Base
 
   # this is pretty horrible but i'm not sure how else to do this
   # can Histogram access the redis instance? should it?
-  def work(username)
+  def work(tumblr)
     settings.cache.delete(session[:key]) if settings.cache.exist?(session[:key])
 
-    histogram = Histogram.new(username)
-    histogram.update_histogram
+    # FIXME any way to avoid creating the tumblr object again?
+    tumblr.fetch_posts
 
-    new_hists = histogram.posts.map.with_index do |post, index|
-      hist = histogram.send(:process, post)
+    new_hists = tumblr.photos.map.with_index do |photo, index|
+      hist = Histogram.new(photo)
       settings.cache.increment(session[:key])
       hist
     end
 
     settings.cache.delete(session[:key]) if settings.cache.exist?(session[:key])
 
-    orig_hist = histogram.histogram
-    histogram.histogram = histogram.send(:crunch, [orig_hist].concat(new_hists))
+    histogram = Crunch.send(:crunch, new_hists.map(&:histogram))
 
     histogram
   end
 
   post "/create" do
-    histogram = Histogram.new(params[:histogram][:username])
+    tumblr = TumblrBlog.new(params[:tumblr_blog][:username])
 
-    if histogram.errors.empty?
-      redirect to("/show?username=#{histogram.username}")
+    if tumblr.errors.empty?
+      redirect to("/show?username=#{tumblr.username}")
     else
-      flash[:alert] = histogram.errors
+      flash[:alert] = tumblr.errors
       redirect to("/")
     end
   end
 
   get "/show" do
-    @histogram = work(params[:username])
+    @tumblr = TumblrBlog.new(params[:username])
+    @histogram = work(@tumblr)
     haml :"histograms/show.html"
   end
 end
