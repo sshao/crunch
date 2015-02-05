@@ -32,7 +32,7 @@ class TumblrBlog
     return false if !responded?
 
     @offset += @latest_response["posts"].size
-    @latest_id = @latest_response["posts"].last["id"]
+    @latest_id = @latest_response["posts"].last["id"] if @latest_response["posts"].last
 
     @posts = @latest_response["posts"]
     @photos = @posts.map { |post| photo_url(post) }
