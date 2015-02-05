@@ -65,8 +65,24 @@ describe TumblrBlog do
       end
     end
 
-    context "blog has > #{Helpers::TEST_PULL_LIMIT} photo posts" do
+    context "blog has photosets" do
+      let(:username) { "photosets" }
+
+      it "pulls the correct number of photo posts" do
+        blog.fetch_posts
+        expect(blog.photos.size).to be 3
+      end
+
+      it "assigns correct offset size" do
+        blog.fetch_posts
+        expect(blog.offset).to be 2
+        expect(blog.data_size).to be 2
+      end
+    end
+
+    context "blog has > #{Helpers::TEST_PULL_LIMIT} single photo posts" do
       let(:username) { FactoryGirl.attributes_for(:tumblr_blog)[:username] }
+
       it "pulls #{Helpers::TEST_PULL_LIMIT} photo posts" do
         blog.fetch_posts
         expect(blog.photos.size).to be Helpers::TEST_PULL_LIMIT
@@ -79,7 +95,7 @@ describe TumblrBlog do
       end
     end
 
-    context "blog has < #{Helpers::TEST_PULL_LIMIT} posts" do
+    context "blog has < #{Helpers::TEST_PULL_LIMIT} single posts" do
       let(:username) { "arrow2" }
       let(:num_posts) { 2 }
 
