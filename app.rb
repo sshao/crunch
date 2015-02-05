@@ -7,8 +7,7 @@ class CrunchApp < Sinatra::Base
 
   use Rack::Flash
 
-  # FIXME wtf? couldn't figure out how to configure outside
-  # of this. this is horrible.
+  # FIXME figure out how to configure in config.ru instead
   uri = ENV["REDISCLOUD_URL"] || nil
   self.set :cache, Sinatra::Cache::RedisStore.new(uri)
 
@@ -76,8 +75,7 @@ class CrunchApp < Sinatra::Base
         begin
           es.send(settings.cache.read(session[:key], raw: true))
         rescue => e
-          # FIXME actually send error to client-side eventsource
-          puts e.message
+          STDERR.puts e.message
         end
       end
 
@@ -93,7 +91,6 @@ class CrunchApp < Sinatra::Base
   def work(tumblr)
     settings.cache.delete(session[:key]) if settings.cache.exist?(session[:key])
 
-    # FIXME any way to avoid creating the tumblr object again?
     tumblr.fetch_posts
 
     if !tumblr.errors.empty?
