@@ -36,7 +36,7 @@ class TumblrBlog
     @offset += posts.size
     @latest_id = posts.last["id"] if posts.last
 
-    @photos = posts.map { |post| photo_url(post) }
+    @photos = posts.map { |post| photo_url(post) }.flatten
   end
 
   private
@@ -71,10 +71,7 @@ class TumblrBlog
   end
 
   def photo_url(post)
-    # FIXME photosets?
-    first_photo = post["photos"][0]
-    photo = standard_photo(first_photo) || original_photo(first_photo)
-    photo["url"]
+    post["photos"].map { |p| standard_photo(p) || original_photo(p) }.map { |p| p["url"] }
   end
 
   def standard_photo(photo_data)
