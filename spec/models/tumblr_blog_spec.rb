@@ -49,7 +49,6 @@ describe TumblrBlog do
   end
 
   describe "#fetch_posts" do
-    let(:username) { FactoryGirl.attributes_for(:tumblr_blog)[:username] }
     let(:blog) { FactoryGirl.build(:tumblr_blog, username: username) }
 
     before :each do
@@ -57,15 +56,49 @@ describe TumblrBlog do
       stub_photo_request(username)
     end
 
-    it "pulls #{Helpers::TEST_PULL_LIMIT} photo posts" do
-      blog.fetch_posts
-      expect(blog.posts.size).to be Helpers::TEST_PULL_LIMIT
+    context "blog has > #{Helpers::TEST_PULL_LIMIT} photo posts" do
+      let(:username) { FactoryGirl.attributes_for(:tumblr_blog)[:username] }
+      it "pulls #{Helpers::TEST_PULL_LIMIT} photo posts" do
+        blog.fetch_posts
+        expect(blog.posts.size).to be Helpers::TEST_PULL_LIMIT
+      end
+
+      it "assigns correct offset (data sample) size" do
+        blog.fetch_posts
+        expect(blog.offset).to be Helpers::TEST_PULL_LIMIT
+        expect(blog.data_size).to be Helpers::TEST_PULL_LIMIT
+      end
     end
 
-    it "assigns correct offset (data sample) size" do
-      blog.fetch_posts
-      expect(blog.offset).to be Helpers::TEST_PULL_LIMIT
-      expect(blog.data_size).to be Helpers::TEST_PULL_LIMIT
+    context "blog has < #{Helpers::TEST_PULL_LIMIT} posts" do
+      let(:username) { "arrow2" }
+      let(:num_posts) { 2 }
+
+      it "pulls the correct number of photo posts" do
+        blog.fetch_posts
+        expect(blog.posts.size).to be num_posts
+      end
+
+      it "assigns correct offset (data sample) size" do
+        blog.fetch_posts
+        expect(blog.offset).to be num_posts
+        expect(blog.data_size).to be num_posts
+      end
+    end
+
+    context "blog has 0 photo posts" do
+      let(:username) { "empty" }
+
+      it "pulls 0 photo posts" do
+        blog.fetch_posts
+        expect(blog.posts.size).to be 0
+      end
+
+      it "assigns correct offset (data sample) size" do
+        blog.fetch_posts
+        expect(blog.offset).to be 0
+        expect(blog.data_size).to be 0
+      end
     end
   end
 
