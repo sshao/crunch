@@ -22,7 +22,9 @@ module Helpers
     fp = File.join(fixture_path, "#{username}_photos_success.json")
     body = File.read(fp)
 
-    stub_request(:get, photo_uri(username)).to_return(status: 200,
+    status = JSON.parse(body)["meta"]["status"]
+
+    stub_request(:get, photo_uri(username)).to_return(status: status,
                                                       headers: headers,
                                                       body: body)
   end

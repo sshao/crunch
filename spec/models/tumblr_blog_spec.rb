@@ -56,6 +56,15 @@ describe TumblrBlog do
       stub_photo_request(username)
     end
 
+    context "blog responds with non-201/200 status" do
+      let(:username) { "unresponsive" }
+
+      it "returns with the error" do
+        blog.fetch_posts
+        expect(blog.errors).to_not be_empty
+      end
+    end
+
     context "blog has > #{Helpers::TEST_PULL_LIMIT} photo posts" do
       let(:username) { FactoryGirl.attributes_for(:tumblr_blog)[:username] }
       it "pulls #{Helpers::TEST_PULL_LIMIT} photo posts" do
