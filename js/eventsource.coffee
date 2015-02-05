@@ -8,7 +8,7 @@ source.addEventListener("message", (e) ->
     progress = e.data
 
     if progress.trim()
-      $(".meter").css("width", ((progress/20) * 100) + "%")
+      $(".meter").css("width", progress + "%")
 , false)
 
 source.addEventListener("open", (e) ->
