@@ -96,6 +96,11 @@ class CrunchApp < Sinatra::Base
     # FIXME any way to avoid creating the tumblr object again?
     tumblr.fetch_posts
 
+    if !tumblr.errors.empty?
+      flash[:alert] = tumblr.errors
+      redirect to("/")
+    end
+
     new_hists = tumblr.photos.map.with_index do |photo, index|
       hist = Histogram.new(photo)
       settings.cache.increment(session[:key])

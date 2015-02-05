@@ -1,6 +1,5 @@
 class TumblrBlog
-  # FIXME what am i doing with response_code as a reader?
-  attr_reader :photos, :username, :url, :response_code, :errors
+  attr_reader :photos, :username, :url, :errors
   attr_accessor :offset
 
   alias :data_size :offset
@@ -25,9 +24,12 @@ class TumblrBlog
                                      limit: CrunchApp::PULL_LIMIT,
                                      offset: offset,
                                      before_id: @latest_id)
+    @response_code = @latest_response["status"]
 
-    # FIXME should probably be an error
-    return false if !responded?
+    if !responded?
+      errors << "could not fetch posts, got #{@response_code}"
+      return
+    end
 
     posts = @latest_response["posts"]
 
@@ -47,7 +49,6 @@ class TumblrBlog
   end
 
   def responded?
-    # FIXME a blog can respond with a bad status code
     @response_code.nil?
   end
 
