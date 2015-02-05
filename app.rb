@@ -73,11 +73,8 @@ class CrunchApp < Sinatra::Base
 
       loop = EM.add_periodic_timer(1) do
         begin
-          unless session[:num_photos] == 0
-            percentage = settings.cache.read(session[:key], raw: true).to_f / session[:num_photos].to_f
-            percentage *= 100.0
-            es.send(percentage.to_i)
-          end
+          percentage = settings.cache.read(session[:key], raw: true)
+          es.send(percentage)
         rescue => e
           STDERR.puts e.message
         end
@@ -94,7 +91,6 @@ class CrunchApp < Sinatra::Base
   # can Histogram access the redis instance? should it?
   def work(tumblr)
     settings.cache.delete(session[:key]) if settings.cache.exist?(session[:key])
-    session[:num_photos] = 0
 
     tumblr.fetch_posts
 
@@ -103,16 +99,14 @@ class CrunchApp < Sinatra::Base
       redirect to("/")
     end
 
-    session[:num_photos] = tumblr.photos.size
-
     new_hists = tumblr.photos.map.with_index do |photo, index|
       hist = Histogram.new(photo)
-      settings.cache.increment(session[:key])
+      percentage = (((index.to_f) / tumblr.photos.size.to_f) * 100.0).to_i
+      settings.cache.write(session[:key], percentage, :raw => true)
       hist
     end
 
     settings.cache.delete(session[:key]) if settings.cache.exist?(session[:key])
-    session[:num_photos] = 0
 
     histogram = Crunch.send(:crunch, new_hists.map(&:histogram))
 
