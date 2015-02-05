@@ -60,7 +60,7 @@ describe TumblrBlog do
       let(:username) { FactoryGirl.attributes_for(:tumblr_blog)[:username] }
       it "pulls #{Helpers::TEST_PULL_LIMIT} photo posts" do
         blog.fetch_posts
-        expect(blog.posts.size).to be Helpers::TEST_PULL_LIMIT
+        expect(blog.photos.size).to be Helpers::TEST_PULL_LIMIT
       end
 
       it "assigns correct offset (data sample) size" do
@@ -76,7 +76,7 @@ describe TumblrBlog do
 
       it "pulls the correct number of photo posts" do
         blog.fetch_posts
-        expect(blog.posts.size).to be num_posts
+        expect(blog.photos.size).to be num_posts
       end
 
       it "assigns correct offset (data sample) size" do
@@ -91,7 +91,7 @@ describe TumblrBlog do
 
       it "pulls 0 photo posts" do
         blog.fetch_posts
-        expect(blog.posts.size).to be 0
+        expect(blog.photos.size).to be 0
       end
 
       it "assigns correct offset (data sample) size" do

@@ -1,7 +1,6 @@
 class TumblrBlog
   # FIXME what am i doing with response_code as a reader?
-  # FIXME if i have 'photos', do i need 'posts'
-  attr_reader :posts, :photos, :username, :url, :response_code, :errors
+  attr_reader :photos, :username, :url, :response_code, :errors
   attr_accessor :offset
 
   alias :data_size :offset
@@ -9,7 +8,6 @@ class TumblrBlog
 
   def initialize(username)
     @errors = []
-    @posts = []
     @username = username
     return if !valid_username?(username)
 
@@ -31,11 +29,12 @@ class TumblrBlog
     # FIXME should probably be an error
     return false if !responded?
 
-    @offset += @latest_response["posts"].size
-    @latest_id = @latest_response["posts"].last["id"] if @latest_response["posts"].last
+    posts = @latest_response["posts"]
 
-    @posts = @latest_response["posts"]
-    @photos = @posts.map { |post| photo_url(post) }
+    @offset += posts.size
+    @latest_id = posts.last["id"] if posts.last
+
+    @photos = posts.map { |post| photo_url(post) }
   end
 
   private
