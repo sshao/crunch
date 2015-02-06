@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # see https://github.com/rubinius/rubinius/issues/2810 if engine_version issues arise
-# ruby "2.1.0", :engine => "rbx", :engine_version => "2.3.0"
+ruby "2.1.0", :engine => "rbx", :engine_version => "2.5.2"
 
 gem 'sinatra', '1.4.5', require: 'sinatra/base'
 gem 'sinatra-param', '1.2.2'
