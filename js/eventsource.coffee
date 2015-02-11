@@ -5,10 +5,14 @@ source.addEventListener("message", (e) ->
     console.log("Error: Message origin was not " + window.location.origin)
     return
   else
-    progress = e.data
+    json = JSON.parse(e.data)
+    progress = json.status
 
-    if progress.trim()
-      $(".meter").css("width", progress + "%")
+    $(".meter").css("width", progress + "%")
+
+    if progress == 100
+      username = json.username
+      window.location.replace("/show?username=" + username);
 , false)
 
 source.addEventListener("open", (e) ->
