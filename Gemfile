@@ -12,6 +12,7 @@ gem "faye-websocket", '0.9.2'
 gem "puma", '2.10.2'
 gem 'redis-sinatra', '1.4.0'
 gem 'sidekiq', '3.3.2'
+gem 'sidekiq-status', '0.5.2'
 
 gem "sass", "~> 3.3.0"
 gem "compass", "~> 1.0"
