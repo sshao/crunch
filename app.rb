@@ -1,5 +1,37 @@
+require "bundler"
+Bundler.require
+
 require_relative "models/histogram"
 require_relative "models/crunch"
+
+$redis = Redis.new
+
+class SinatraWorker
+  include Sidekiq::Worker
+  include Sidekiq::Status::Worker
+
+  def perform(username)
+    tumblr = TumblrBlog.new(username)
+    tumblr.fetch_posts
+
+    if !tumblr.errors.empty?
+      flash[:alert] = tumblr.errors
+      redirect to("/")
+    end
+
+    new_hists = tumblr.photos.map.with_index do |photo, index|
+      hist = Histogram.new(photo)
+      percentage = (((index.to_f) / tumblr.photos.size.to_f) * 100.0).to_i
+      at percentage, username
+      hist
+    end
+
+    histogram = Crunch.send(:crunch, new_hists.map(&:histogram))
+
+    $redis.set username, histogram.to_json
+    at 100, username
+  end
+end
 
 class CrunchApp < Sinatra::Base
   enable :sessions
@@ -71,10 +103,15 @@ class CrunchApp < Sinatra::Base
     if Faye::EventSource.eventsource?(env)
       es = Faye::EventSource.new(env)
 
+      # FIXME close when done with a request?
       loop = EM.add_periodic_timer(1) do
         begin
-          percentage = settings.cache.read(session[:key], raw: true)
-          es.send(percentage)
+          job_id = session[:job_id]
+          if job_id
+            status = Sidekiq::Status::at job_id
+            username = Sidekiq::Status::message job_id
+            es.send({username: username, status: status}.to_json)
+          end
         rescue => e
           STDERR.puts e.message
         end
@@ -87,37 +124,15 @@ class CrunchApp < Sinatra::Base
     end
   end
 
-  # this is pretty horrible but i'm not sure how else to do this
-  # can Histogram access the redis instance? should it?
-  def work(tumblr)
-    settings.cache.delete(session[:key]) if settings.cache.exist?(session[:key])
-
-    tumblr.fetch_posts
-
-    if !tumblr.errors.empty?
-      flash[:alert] = tumblr.errors
-      redirect to("/")
-    end
-
-    new_hists = tumblr.photos.map.with_index do |photo, index|
-      hist = Histogram.new(photo)
-      percentage = (((index.to_f) / tumblr.photos.size.to_f) * 100.0).to_i
-      settings.cache.write(session[:key], percentage, :raw => true)
-      hist
-    end
-
-    settings.cache.delete(session[:key]) if settings.cache.exist?(session[:key])
-
-    histogram = Crunch.send(:crunch, new_hists.map(&:histogram))
-
-    histogram
-  end
-
   post "/create" do
     tumblr = TumblrBlog.new(params[:tumblr_blog][:username])
 
     if tumblr.errors.empty?
-      redirect to("/show?username=#{tumblr.username}")
+      session[:job_id] = SinatraWorker.perform_async tumblr.username
+      # FIXME don't like this as it re-renders the index page
+      # making it seem like nothing is actually happening
+      # might want to just prevent the form from doing anything
+      haml :index
     else
       flash[:alert] = tumblr.errors
       redirect to("/")
@@ -126,7 +141,9 @@ class CrunchApp < Sinatra::Base
 
   get "/show" do
     @tumblr = TumblrBlog.new(params[:username])
-    @histogram = work(@tumblr)
+    hist = JSON.parse($redis.get(params[:username])) if $redis.exists(params[:username])
+    @histogram = hist || {}
+    session[:job_id] = nil
     haml :"histograms/show.html"
   end
 end
