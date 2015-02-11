@@ -25,3 +25,13 @@ source.addEventListener("error", (e) ->
   else
     console.log("Error: EventSource connection error")
 , false)
+
+$("form").submit((e) ->
+  e.preventDefault()
+
+  $.ajax({
+    type: 'post',
+    url: '/create',
+    data: $("form").serialize()
+  })
+)

@@ -106,7 +106,7 @@ class CrunchApp < Sinatra::Base
       # FIXME close when done with a request?
       loop = EM.add_periodic_timer(1) do
         begin
-          job_id = session[:job_id]
+          job_id = settings.cache.read(:job_id)
           if job_id
             status = Sidekiq::Status::at job_id
             username = Sidekiq::Status::message job_id
@@ -128,11 +128,8 @@ class CrunchApp < Sinatra::Base
     tumblr = TumblrBlog.new(params[:tumblr_blog][:username])
 
     if tumblr.errors.empty?
-      session[:job_id] = SinatraWorker.perform_async tumblr.username
-      # FIXME don't like this as it re-renders the index page
-      # making it seem like nothing is actually happening
-      # might want to just prevent the form from doing anything
-      haml :index
+      job_id = SinatraWorker.perform_async tumblr.username
+      settings.cache.write(:job_id, job_id)
     else
       flash[:alert] = tumblr.errors
       redirect to("/")
@@ -143,7 +140,7 @@ class CrunchApp < Sinatra::Base
     @tumblr = TumblrBlog.new(params[:username])
     hist = JSON.parse($redis.get(params[:username])) if $redis.exists(params[:username])
     @histogram = hist || {}
-    session[:job_id] = nil
+    settings.cache.write(:job_id, nil)
     haml :"histograms/show.html"
   end
 end
